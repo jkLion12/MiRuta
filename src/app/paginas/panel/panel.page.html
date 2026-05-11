@@ -1,11 +1,12 @@
-<ion-header translucent="true">
-  <ion-toolbar>
-    <ion-title>MiRuta</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="ion-page">
+  <ion-header translucent="true">
+    <ion-toolbar>
+      <ion-title>MiRuta</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content [fullscreen]="true" class="fondo-app">
-  <div class="pantalla">
+  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
+    <div class="pantalla">
     <section class="hero">
       <p class="etiqueta">Panel inteligente</p>
       <h1>Controla kilómetros, combustible e ingresos desde una sola vista.</h1>
@@ -96,5 +97,6 @@
         </div>
       }
     </section>
-  </div>
-</ion-content>
+    </div>
+  </ion-content>
+</div>

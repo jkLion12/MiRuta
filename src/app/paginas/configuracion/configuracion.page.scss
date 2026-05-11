@@ -1,5 +1,6 @@
 .pantalla {
-  padding: calc(72px + env(safe-area-inset-top)) 1rem 7.4rem;
+  padding: 1rem 1rem 7.4rem;
+  min-height: 100%;
 }
 
 .tarjeta-formulario {

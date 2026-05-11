@@ -1,11 +1,12 @@
-<ion-header translucent="true">
-  <ion-toolbar>
-    <ion-title>Ajustes</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="ion-page">
+  <ion-header translucent="true">
+    <ion-toolbar>
+      <ion-title>Ajustes</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content [fullscreen]="true" class="fondo-app">
-  <div class="pantalla">
+  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
+    <div class="pantalla">
     <section class="tarjeta-formulario">
       <h1>Configuración del vehículo</h1>
       <form [formGroup]="formulario" class="formulario">
@@ -54,8 +55,9 @@
         </ion-select>
       </form>
 
-      <ion-button expand="block" class="boton-principal" (click)="guardar()">Guardar ajustes</ion-button>
-      <ion-button expand="block" fill="outline" (click)="exportarCsv()">Exportar datos a CSV</ion-button>
+      <ion-button expand="block" class="boton-principal" type="button" (click)="guardar()">Guardar ajustes</ion-button>
+      <ion-button expand="block" fill="outline" type="button" (click)="exportarCsv()">Exportar datos a CSV</ion-button>
     </section>
-  </div>
-</ion-content>
+    </div>
+  </ion-content>
+</div>

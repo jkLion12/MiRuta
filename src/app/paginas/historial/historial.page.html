@@ -1,11 +1,12 @@
-<ion-header translucent="true">
-  <ion-toolbar>
-    <ion-title>Historial</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="ion-page">
+  <ion-header translucent="true">
+    <ion-toolbar>
+      <ion-title>Historial</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content [fullscreen]="true" class="fondo-app">
-  <div class="pantalla">
+  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
+    <div class="pantalla">
     @for (viaje of viajesService.viajes(); track viaje.id) {
       <article class="tarjeta-viaje">
         <a class="contenido" [routerLink]="['/historial', viaje.id]">
@@ -37,5 +38,6 @@
         <p>Comienza un trayecto desde la pestaña Viajes o registra uno manualmente.</p>
       </section>
     }
-  </div>
-</ion-content>
+    </div>
+  </ion-content>
+</div>

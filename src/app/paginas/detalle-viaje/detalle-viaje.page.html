@@ -1,14 +1,15 @@
-<ion-header translucent="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
+<div class="ion-page">
+  <ion-header translucent="true">
+    <ion-toolbar>
+      <ion-buttons slot="start">
       <ion-back-button defaultHref="/historial"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Detalle del viaje</ion-title>
-  </ion-toolbar>
-</ion-header>
+      </ion-buttons>
+      <ion-title>Detalle del viaje</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content [fullscreen]="true" class="fondo-app">
-  <div class="pantalla">
+  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
+    <div class="pantalla">
     @if (viaje(); as registro) {
       <section class="resumen">
         <p>{{ formatearFecha(registro.fechaInicio) }}</p>
@@ -58,10 +59,11 @@
           <ion-textarea fill="outline" label="Notas" labelPlacement="stacked" formControlName="notas"></ion-textarea>
         </form>
 
-        <ion-button expand="block" class="boton-principal" (click)="guardarCambios()">
+        <ion-button expand="block" class="boton-principal" type="button" (click)="guardarCambios()">
           Guardar cambios
         </ion-button>
       </section>
     }
-  </div>
-</ion-content>
+    </div>
+  </ion-content>
+</div>

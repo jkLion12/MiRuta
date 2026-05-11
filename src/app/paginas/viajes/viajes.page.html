@@ -1,11 +1,12 @@
-<ion-header translucent="true">
-  <ion-toolbar>
-    <ion-title>Viajes</ion-title>
-  </ion-toolbar>
-</ion-header>
+<div class="ion-page">
+  <ion-header translucent="true">
+    <ion-toolbar>
+      <ion-title>Viajes</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-<ion-content [fullscreen]="true" class="fondo-app">
-  <div class="pantalla">
+  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
+    <div class="pantalla">
     <ion-segment [value]="segmento()" (ionChange)="manejarCambioSegmento($event.detail.value)">
       <ion-segment-button value="gps">
         <ion-label>En vivo</ion-label>
@@ -23,7 +24,7 @@
         </div>
 
         @if (!viajesService.viajeActivo()) {
-          <ion-button expand="block" size="large" class="boton-principal" (click)="iniciarViaje()">
+          <ion-button expand="block" size="large" class="boton-principal" type="button" (click)="iniciarViaje()">
             Iniciar Viaje
           </ion-button>
         } @else {
@@ -32,6 +33,7 @@
             size="large"
             color="danger"
             class="boton-principal"
+            type="button"
             (click)="finalizarViaje()"
           >
             {{ mostrarFormularioCierre() ? 'Guardar y cerrar viaje' : 'Finalizar Viaje' }}
@@ -79,7 +81,7 @@
               labelPlacement="stacked"
               formControlName="monto"
             ></ion-input>
-            <ion-button expand="block" fill="outline" (click)="agregarIngresoParcial()">
+            <ion-button expand="block" fill="outline" type="button" (click)="agregarIngresoParcial()">
               Agregar ingreso
             </ion-button>
           </form>
@@ -172,10 +174,11 @@
           <ion-textarea fill="outline" label="Notas" labelPlacement="stacked" formControlName="notas"></ion-textarea>
         </form>
 
-        <ion-button expand="block" size="large" class="boton-principal" (click)="registrarViajeManual()">
+        <ion-button expand="block" size="large" class="boton-principal" type="button" (click)="registrarViajeManual()">
           Guardar viaje manual
         </ion-button>
       </section>
     }
-  </div>
-</ion-content>
+    </div>
+  </ion-content>
+</div>
