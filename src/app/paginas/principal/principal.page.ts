@@ -1,13 +1,11 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-principal',
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterLink, RouterLinkActive],
+  imports: [IonicModule],
   templateUrl: './principal.page.html',
-  styleUrls: ['./principal.page.scss'],
+  styleUrl: './principal.page.scss',
 })
 export class PrincipalPage {}

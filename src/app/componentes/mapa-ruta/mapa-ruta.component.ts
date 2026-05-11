@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
   Component,
@@ -10,181 +9,142 @@ import {
   ViewChild,
 } from '@angular/core';
 import * as L from 'leaflet';
+
 import { PuntoRuta } from '../../modelos/viaje.model';
+
+export type CapaMapa = 'calles' | 'satelite';
 
 @Component({
   selector: 'app-mapa-ruta',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="contenedor-mapa">
-      <div class="controles-mapa">
-        <button type="button" [class.activo]="modoMapa === 'calles'" (click)="cambiarModoMapa('calles')">
-          Calles
-        </button>
-        <button type="button" [class.activo]="modoMapa === 'satelite'" (click)="cambiarModoMapa('satelite')">
-          Satélite
-        </button>
-      </div>
-      <div class="mapa" #contenedorMapa></div>
-    </div>
-  `,
-  styleUrls: ['./mapa-ruta.component.scss'],
+  templateUrl: './mapa-ruta.component.html',
+  styleUrl: './mapa-ruta.component.scss',
 })
 export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() puntosRuta: PuntoRuta[] = [];
-  @Input() centroInicial?: PuntoRuta | null;
-  @ViewChild('contenedorMapa') private contenedorMapa?: ElementRef<HTMLDivElement>;
+  @Input() puntos: PuntoRuta[] = [];
+  @Input() centro?: PuntoRuta | null;
+  @Input() capa: CapaMapa = 'calles';
+  @Input() seguirCentro = false;
+
+  @ViewChild('mapa', { static: true }) private readonly mapaRef?: ElementRef<HTMLDivElement>;
 
   private mapa?: L.Map;
-  private capaRuta?: L.Polyline;
-  private capaPuntos?: L.FeatureGroup;
-  private capaBaseActual?: L.TileLayer;
-  private observadorTamano?: ResizeObserver;
-  modoMapa: 'calles' | 'satelite' = 'calles';
+  private capaActual?: L.TileLayer;
+  private ruta?: L.Polyline;
+  private marcadorActual?: L.CircleMarker;
+  private circuloPrecision?: L.Circle;
 
   ngAfterViewInit(): void {
-    this.inicializarMapa();
-    this.actualizarMapa();
+    this.crearMapa();
+    this.pintar();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if ((changes['puntosRuta'] || changes['centroInicial']) && this.mapa) {
-      this.actualizarMapa();
+    if (!this.mapa) {
+      return;
     }
+
+    if (changes['capa']) {
+      this.cambiarCapa();
+    }
+
+    this.pintar();
   }
 
   ngOnDestroy(): void {
-    this.observadorTamano?.disconnect();
     this.mapa?.remove();
+    this.mapa = undefined;
   }
 
-  cambiarModoMapa(modo: 'calles' | 'satelite'): void {
-    this.modoMapa = modo;
-    this.aplicarCapaBase();
+  invalidarTamano(): void {
+    window.setTimeout(() => this.mapa?.invalidateSize(true), 120);
   }
 
-  private inicializarMapa(): void {
-    if (!this.contenedorMapa || this.mapa) {
+  private crearMapa(): void {
+    if (!this.mapaRef || this.mapa) {
       return;
     }
 
-    this.mapa = L.map(this.contenedorMapa.nativeElement, {
-      zoomControl: false,
+    const centroInicial =
+      this.centro ?? this.puntos[this.puntos.length - 1] ?? {
+        lat: -12.0464,
+        lng: -77.0428,
+        timestamp: Date.now(),
+      };
+    this.mapa = L.map(this.mapaRef.nativeElement, {
+      center: [centroInicial.lat, centroInicial.lng],
+      zoom: 16,
+      zoomControl: true,
       attributionControl: false,
-    }).setView([-12.0464, -77.0428], 13);
-
-    this.aplicarCapaBase();
-    L.control.zoom({ position: 'bottomright' }).addTo(this.mapa);
-    this.capaPuntos = L.featureGroup().addTo(this.mapa);
-    this.observadorTamano = new ResizeObserver(() => this.invalidarTamanoMapa());
-    this.observadorTamano.observe(this.contenedorMapa.nativeElement);
-    this.invalidarTamanoMapa();
+    });
+    this.cambiarCapa();
+    this.invalidarTamano();
   }
 
-  private actualizarMapa(): void {
-    if (!this.mapa || !this.capaPuntos) {
+  private cambiarCapa(): void {
+    if (!this.mapa) {
       return;
     }
 
-    this.capaRuta?.remove();
-    this.capaPuntos.clearLayers();
+    if (this.capaActual) {
+      this.capaActual.removeFrom(this.mapa);
+    }
 
-    if (!this.puntosRuta.length) {
-      if (this.centroInicial) {
-        this.mapa.setView([this.centroInicial.latitud, this.centroInicial.longitud], 16);
-        L.circleMarker([this.centroInicial.latitud, this.centroInicial.longitud], {
-          radius: 9,
-          color: '#f7efed',
-          weight: 2,
-          fillColor: '#f1485b',
-          fillOpacity: 1,
-        }).addTo(this.capaPuntos);
-      } else {
-        this.mapa.setView([-12.0464, -77.0428], 12);
-      }
-      this.invalidarTamanoMapa();
+    const url =
+      this.capa === 'satelite'
+        ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+    this.capaActual = L.tileLayer(url, {
+      maxZoom: 19,
+      crossOrigin: true,
+    }).addTo(this.mapa);
+  }
+
+  private pintar(): void {
+    if (!this.mapa) {
       return;
     }
 
-    const latLngs = this.puntosRuta.map((punto) => L.latLng(punto.latitud, punto.longitud));
-    if (latLngs.length === 1) {
-      const unicoPunto = latLngs[0];
-      L.circleMarker(unicoPunto, {
-        radius: 9,
-        color: '#f7efed',
-        weight: 2,
+    const puntoActual = this.puntos[this.puntos.length - 1] ?? this.centro;
+
+    this.ruta?.removeFrom(this.mapa);
+    if (this.puntos.length > 1) {
+      this.ruta = L.polyline(
+        this.puntos.map((punto) => [punto.lat, punto.lng]),
+        { color: '#f1485b', weight: 5, opacity: 0.9 },
+      ).addTo(this.mapa);
+    }
+
+    this.marcadorActual?.removeFrom(this.mapa);
+    this.circuloPrecision?.removeFrom(this.mapa);
+
+    if (puntoActual) {
+      this.marcadorActual = L.circleMarker([puntoActual.lat, puntoActual.lng], {
+        radius: 8,
+        color: '#ffffff',
+        weight: 3,
         fillColor: '#f1485b',
         fillOpacity: 1,
-      }).addTo(this.capaPuntos);
-      this.mapa.setView(unicoPunto, 17);
-      this.invalidarTamanoMapa();
-      return;
+      }).addTo(this.mapa);
+
+      if (puntoActual.precision) {
+        this.circuloPrecision = L.circle([puntoActual.lat, puntoActual.lng], {
+          radius: puntoActual.precision,
+          color: '#7fa7b8',
+          fillColor: '#7fa7b8',
+          fillOpacity: 0.16,
+          weight: 1,
+        }).addTo(this.mapa);
+      }
+
+      if (this.seguirCentro || this.puntos.length <= 1) {
+        this.mapa.setView([puntoActual.lat, puntoActual.lng], Math.max(this.mapa.getZoom(), 16), {
+          animate: true,
+        });
+      }
     }
 
-    this.capaRuta = L.polyline(latLngs, {
-      color: '#f1485b',
-      weight: 5,
-      opacity: 0.9,
-      lineCap: 'round',
-    }).addTo(this.mapa);
-
-    const puntoInicio = latLngs[0];
-    const puntoFin = latLngs[latLngs.length - 1];
-
-    L.circleMarker(puntoInicio, {
-      radius: 7,
-      color: '#f7efed',
-      weight: 2,
-      fillColor: '#7fa7b8',
-      fillOpacity: 1,
-    }).addTo(this.capaPuntos);
-
-    L.circleMarker(puntoFin, {
-      radius: 8,
-      color: '#f7efed',
-      weight: 2,
-      fillColor: '#33546d',
-      fillOpacity: 1,
-    }).addTo(this.capaPuntos);
-
-    this.mapa.fitBounds(this.capaRuta.getBounds(), {
-      padding: [24, 24],
-      maxZoom: 16,
-    });
-    this.invalidarTamanoMapa();
-  }
-
-  private aplicarCapaBase(): void {
-    if (!this.mapa) {
-      return;
-    }
-
-    this.capaBaseActual?.remove();
-    this.capaBaseActual =
-      this.modoMapa === 'satelite'
-        ? L.tileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            {
-              maxZoom: 19,
-            },
-          )
-        : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-          });
-
-    this.capaBaseActual.addTo(this.mapa);
-    this.capaBaseActual.on('load', () => this.invalidarTamanoMapa());
-  }
-
-  private invalidarTamanoMapa(): void {
-    if (!this.mapa) {
-      return;
-    }
-
-    requestAnimationFrame(() => {
-      this.mapa?.invalidateSize();
-    });
-    setTimeout(() => this.mapa?.invalidateSize(), 150);
+    this.invalidarTamano();
   }
 }

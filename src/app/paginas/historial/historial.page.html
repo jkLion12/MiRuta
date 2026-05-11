@@ -1,43 +1,39 @@
-<div class="ion-page">
-  <ion-header translucent="true">
-    <ion-toolbar>
-      <ion-title>Historial</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Historial</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
-    <div class="pantalla">
-      @for (viaje of viajesService.viajes(); track viaje.id) {
-        <article class="tarjeta-viaje">
-          <a class="contenido" [routerLink]="['/historial', viaje.id]">
-            <div class="cabecera">
-              <div>
-                <p>{{ formatearFecha(viaje.fechaInicio) }}</p>
-                <h2>{{ viaje.origen }} -> {{ viaje.destino }}</h2>
-              </div>
-              <ion-chip [color]="viaje.tipo === 'gps' ? 'primary' : 'medium'">
-                {{ viaje.tipo === 'gps' ? 'GPS' : 'Manual' }}
-              </ion-chip>
-            </div>
+<ion-content [scrollY]="true">
+  <main class="pantalla">
+    <section class="bloque vacio" *ngIf="viajes.length === 0">
+      <h1>Aún no hay viajes</h1>
+      <p>Comienza un trayecto desde la pestaña Viajes o registra uno manualmente.</p>
+    </section>
 
-            <div class="metricas">
-              <span>Distancia: {{ viaje.distanciaKm }} km</span>
-              <span>Ingreso: {{ formatearMoneda(viaje.ingreso) }}</span>
-              <span>Combustible: {{ formatearMoneda(viaje.costoCombustible) }}</span>
-              <strong>Neto: {{ formatearMoneda(viaje.gananciaNeta) }}</strong>
-            </div>
-          </a>
-
-          <ion-button fill="clear" color="danger" size="small" (click)="confirmarEliminacion(viaje.id)">
-            Eliminar
-          </ion-button>
-        </article>
-      } @empty {
-        <section class="vacio">
-          <h2>Aun no hay viajes</h2>
-          <p>Comienza un trayecto desde la pestaña Viajes o registra uno manualmente.</p>
-        </section>
-      }
-    </div>
-  </ion-content>
-</div>
+    <section class="lista" *ngIf="viajes.length > 0">
+      <article class="viaje" *ngFor="let viaje of viajes" (click)="abrir(viaje.id)">
+        <div>
+          <span>{{ fecha(viaje.fechaInicio) }}</span>
+          <strong>{{ viaje.origen }} → {{ viaje.destino }}</strong>
+        </div>
+        <ion-chip>{{ viaje.tipo === 'gps' ? 'GPS' : 'Manual' }}</ion-chip>
+        <div class="metricas">
+          <p>{{ km(viaje.distanciaKm) }}</p>
+          <p>{{ dinero(viaje.ingreso) }}</p>
+          <p>{{ dinero(viaje.costoCombustible) }}</p>
+          <p class="ganancia">{{ dinero(viaje.ingreso - viaje.costoCombustible) }}</p>
+        </div>
+        <ion-button
+          size="small"
+          fill="clear"
+          color="danger"
+          (click)="eliminar(viaje.id, $event)"
+        >
+          <ion-icon name="trash-outline" slot="start"></ion-icon>
+          Eliminar
+        </ion-button>
+      </article>
+    </section>
+  </main>
+</ion-content>

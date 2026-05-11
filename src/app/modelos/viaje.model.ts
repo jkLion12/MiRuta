@@ -1,14 +1,15 @@
 export interface PuntoRuta {
-  latitud: number;
-  longitud: number;
-  marcaTiempo: string;
-  velocidadKmh?: number;
-  precisionMetros?: number;
+  lat: number;
+  lng: number;
+  precision?: number;
+  timestamp: number;
 }
+
+export type TipoViaje = 'gps' | 'manual';
 
 export interface Viaje {
   id: string;
-  tipo: 'gps' | 'manual';
+  tipo: TipoViaje;
   fechaInicio: string;
   fechaFin: string;
   origen: string;
@@ -16,34 +17,16 @@ export interface Viaje {
   distanciaKm: number;
   duracionSegundos: number;
   ingreso: number;
-  ingresosParciales: number[];
-  combustibleEstimadoLitros: number;
-  combustibleRealLitros?: number;
   costoCombustible: number;
-  gananciaNeta: number;
-  puntosRuta: PuntoRuta[];
+  litrosCargados?: number;
+  ruta: PuntoRuta[];
   notas?: string;
 }
 
-export interface ViajeEnCurso {
-  id: string;
-  fechaInicio: string;
-  distanciaKm: number;
-  ingresoAcumulado: number;
-  ingresosParciales: number[];
-  combustibleEstimadoLitros: number;
-  puntosRuta: PuntoRuta[];
-}
-
-export interface ResumenIndicadores {
-  kilometros: number;
-  ingresos: number;
-  combustible: number;
-  ganancia: number;
+export interface ResumenViajes {
+  totalKm: number;
+  totalIngresos: number;
+  totalCombustible: number;
+  gananciaNeta: number;
   ingresoPorKm: number;
-}
-
-export interface SerieGrafico {
-  etiqueta: string;
-  valor: number;
 }

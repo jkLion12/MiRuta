@@ -1,71 +1,58 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
+
+import { CONFIGURACION_DEFECTO, ConfiguracionApp } from '../../modelos/configuracion.model';
 import { ConfiguracionService } from '../../servicios/configuracion.service';
 import { ViajesService } from '../../servicios/viajes.service';
 
 @Component({
   selector: 'app-configuracion',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule],
+  imports: [FormsModule, IonicModule],
   templateUrl: './configuracion.page.html',
-  styleUrls: ['./configuracion.page.scss'],
+  styleUrl: './configuracion.page.scss',
 })
-export class ConfiguracionPage {
-  readonly formulario = this.fb.group({
-    rendimientoModo: ['km_l', Validators.required],
-    rendimientoValor: [25, [Validators.required, Validators.min(0.1)]],
-    precioCombustible: [18.5, [Validators.required, Validators.min(0)]],
-    moneda: ['PEN', Validators.required],
-    unidadDistancia: ['km', Validators.required],
-    tema: ['oscuro', Validators.required],
-  });
+export class ConfiguracionPage implements OnInit {
+  configuracion: ConfiguracionApp = { ...CONFIGURACION_DEFECTO };
 
   constructor(
-    private readonly fb: FormBuilder,
-    public readonly configuracionService: ConfiguracionService,
-    private readonly viajesService: ViajesService,
-    private readonly toastController: ToastController,
-  ) {
-    this.formulario.patchValue(this.configuracionService.configuracion());
+    private readonly configuracionService: ConfiguracionService,
+    private readonly viajes: ViajesService,
+    private readonly toast: ToastController,
+  ) {}
+
+  async ngOnInit(): Promise<void> {
+    this.configuracion = { ...(await this.configuracionService.cargar()) };
   }
 
   async guardar(): Promise<void> {
-    if (this.formulario.invalid) {
-      this.formulario.markAllAsTouched();
-      return;
-    }
-
-    const valor = this.formulario.getRawValue();
-    await this.configuracionService.actualizar({
-      rendimientoModo: valor.rendimientoModo === 'l_100km' ? 'l_100km' : 'km_l',
-      rendimientoValor: Number(valor.rendimientoValor ?? 0),
-      precioCombustible: Number(valor.precioCombustible ?? 0),
-      moneda: valor.moneda ?? 'PEN',
-      unidadDistancia: valor.unidadDistancia === 'mi' ? 'mi' : 'km',
-      tema: valor.tema === 'claro' || valor.tema === 'sistema' ? valor.tema : 'oscuro',
+    await this.configuracionService.guardar({
+      ...this.configuracion,
+      rendimientoKmLitro: Number(this.configuracion.rendimientoKmLitro) || 25,
+      precioLitro: Number(this.configuracion.precioLitro) || 0,
     });
-    await this.mostrarToast('Configuración actualizada.');
+    await this.mostrarToast('Ajustes guardados.');
   }
 
   async exportarCsv(): Promise<void> {
-    const csv = this.viajesService.exportarCsv(this.configuracionService.configuracion());
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
+    await this.viajes.cargar();
+    const csv = this.viajes.exportarCsv();
+    const archivo = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(archivo);
     const enlace = document.createElement('a');
     enlace.href = url;
-    enlace.download = `miruta-${new Date().toISOString().slice(0, 10)}.csv`;
+    enlace.download = `miruta-viajes-${new Date().toISOString().slice(0, 10)}.csv`;
     enlace.click();
     URL.revokeObjectURL(url);
-    await this.mostrarToast('CSV exportado.');
+    await this.mostrarToast('CSV generado.');
   }
 
-  private async mostrarToast(mensaje: string): Promise<void> {
-    const toast = await this.toastController.create({
-      message: mensaje,
-      duration: 1800,
-      position: 'top',
+  private async mostrarToast(message: string): Promise<void> {
+    const toast = await this.toast.create({
+      message,
+      duration: 1600,
+      position: 'bottom',
     });
     await toast.present();
   }

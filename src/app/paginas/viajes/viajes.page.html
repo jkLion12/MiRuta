@@ -1,14 +1,13 @@
-<div class="ion-page">
-  <ion-header translucent="true">
-    <ion-toolbar>
-      <ion-title>Viajes</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Viajes</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
-    <div class="pantalla">
-    <ion-segment [value]="segmento()" (ionChange)="manejarCambioSegmento($event.detail.value)">
-      <ion-segment-button value="gps">
+<ion-content [scrollY]="true">
+  <main class="pantalla">
+    <ion-segment [(ngModel)]="modo">
+      <ion-segment-button value="vivo">
         <ion-label>En vivo</ion-label>
       </ion-segment-button>
       <ion-segment-button value="manual">
@@ -16,172 +15,122 @@
       </ion-segment-button>
     </ion-segment>
 
-    @if (segmento() === 'gps') {
-      <section class="panel-accion">
-        <div>
-          <p class="etiqueta">Registro en tiempo real</p>
-          <h1>{{ viajesService.viajeActivo() ? 'Ruta activa' : 'Listo para salir' }}</h1>
-        </div>
-
-        @if (!viajesService.viajeActivo()) {
-          <ion-button expand="block" size="large" class="boton-principal" type="button" (click)="iniciarViaje()">
-            Iniciar Viaje
-          </ion-button>
-        } @else {
-          <ion-button
-            expand="block"
-            size="large"
-            color="danger"
-            class="boton-principal"
-            type="button"
-            (click)="finalizarViaje()"
-          >
-            {{ mostrarFormularioCierre() ? 'Guardar y cerrar viaje' : 'Finalizar Viaje' }}
-          </ion-button>
-        }
-      </section>
-
-      <app-mapa-ruta
-        [puntosRuta]="viajesService.viajeActivo()?.puntosRuta ?? []"
-        [centroInicial]="ubicacionService.ubicacionActual()"
-      ></app-mapa-ruta>
-
-      @if (ubicacionService.error()) {
-        <ion-note color="danger">{{ ubicacionService.error() }}</ion-note>
-      }
-
-      <section class="rejilla-metricas">
-        <article class="tarjeta-metrica">
-          <span>Distancia</span>
-          <strong>{{ viajesService.viajeActivo()?.distanciaKm ?? 0 }} {{ unidadDistancia() }}</strong>
-        </article>
-        <article class="tarjeta-metrica">
-          <span>Duración</span>
-          <strong>{{ duracionActual() }}</strong>
-        </article>
-        <article class="tarjeta-metrica">
-          <span>Combustible estimado</span>
-          <strong>{{ viajesService.viajeActivo()?.combustibleEstimadoLitros ?? 0 }} L</strong>
-        </article>
-        <article class="tarjeta-metrica destacado">
-          <span>Ingreso acumulado</span>
-          <strong>{{ formatearMoneda(viajesService.viajeActivo()?.ingresoAcumulado ?? 0) }}</strong>
-        </article>
-      </section>
-
-      @if (viajesService.viajeActivo()) {
-        <section class="tarjeta-formulario">
-          <div class="encabezado-tarjeta">
-            <h2>Agregar pago parcial</h2>
-            <span>{{ viajesService.viajeActivo()?.ingresosParciales?.length ?? 0 }} registros</span>
-          </div>
-
-          <form [formGroup]="formularioIngresoParcial" class="formulario-simple">
-            <ion-input
-              fill="outline"
-              type="number"
-              label="Monto"
-              labelPlacement="stacked"
-              formControlName="monto"
-            ></ion-input>
-            <ion-button expand="block" fill="outline" type="button" (click)="agregarIngresoParcial()">
-              Agregar ingreso
-            </ion-button>
-          </form>
-        </section>
-      }
-
-      @if (mostrarFormularioCierre() && viajesService.viajeActivo()) {
-        <section class="tarjeta-formulario">
-          <div class="encabezado-tarjeta">
-            <h2>Cierre rápido</h2>
-            <span>Completa el ingreso final y el combustible real si aplica</span>
-          </div>
-
-          <form [formGroup]="formularioCierre" class="formulario">
-            <ion-input
-              fill="outline"
-              type="number"
-              label="Ingreso final"
-              labelPlacement="stacked"
-              formControlName="ingresoFinal"
-            ></ion-input>
-            <ion-input
-              fill="outline"
-              type="number"
-              label="Litros cargados"
-              labelPlacement="stacked"
-              formControlName="combustibleRealLitros"
-            ></ion-input>
-            <ion-input
-              fill="outline"
-              type="number"
-              label="Costo real combustible"
-              labelPlacement="stacked"
-              formControlName="costoCombustible"
-            ></ion-input>
-            <ion-textarea
-              fill="outline"
-              label="Notas"
-              labelPlacement="stacked"
-              formControlName="notas"
-            ></ion-textarea>
-          </form>
-        </section>
-      }
-    } @else {
-      <section class="tarjeta-formulario">
-        <div class="encabezado-tarjeta">
-          <h2>Nuevo viaje manual</h2>
-          <span>Ideal si olvidaste activar el GPS</span>
-        </div>
-
-        <form [formGroup]="formularioManual" class="formulario">
-          <ion-input fill="outline" label="Origen" labelPlacement="stacked" formControlName="origen"></ion-input>
-          <ion-input fill="outline" label="Destino" labelPlacement="stacked" formControlName="destino"></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Kilómetros"
-            labelPlacement="stacked"
-            formControlName="distanciaKm"
-          ></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Duración (min)"
-            labelPlacement="stacked"
-            formControlName="duracionMinutos"
-          ></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Ingreso"
-            labelPlacement="stacked"
-            formControlName="ingreso"
-          ></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Litros consumidos"
-            labelPlacement="stacked"
-            formControlName="combustibleRealLitros"
-          ></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Costo combustible"
-            labelPlacement="stacked"
-            formControlName="costoCombustible"
-          ></ion-input>
-          <ion-textarea fill="outline" label="Notas" labelPlacement="stacked" formControlName="notas"></ion-textarea>
-        </form>
-
-        <ion-button expand="block" size="large" class="boton-principal" type="button" (click)="registrarViajeManual()">
-          Guardar viaje manual
+    <ng-container *ngIf="modo === 'vivo'; else formularioManual">
+      <section class="bloque">
+        <span class="eyebrow">Registro en tiempo real</span>
+        <h1>{{ activo ? 'Ruta activa' : 'Listo para salir' }}</h1>
+        <ion-button
+          expand="block"
+          class="boton-principal"
+          *ngIf="!activo"
+          (click)="iniciarViaje()"
+        >
+          Iniciar viaje
+        </ion-button>
+        <ion-button
+          expand="block"
+          color="danger"
+          *ngIf="activo"
+          (click)="finalizarViaje()"
+        >
+          Finalizar viaje
         </ion-button>
       </section>
-    }
-    </div>
-  </ion-content>
-</div>
+
+      <section class="mapa-contenedor">
+        <app-mapa-ruta
+          [puntos]="puntos"
+          [centro]="centroActual"
+          [capa]="capa"
+          [seguirCentro]="activo || seguirCentro"
+        ></app-mapa-ruta>
+      </section>
+
+      <div class="controles-mapa">
+        <ion-segment [(ngModel)]="capa">
+          <ion-segment-button value="calles">
+            <ion-label>Calles</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="satelite">
+            <ion-label>Satélite</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+        <ion-button fill="outline" (click)="centrarEnMiUbicacion()">
+          <ion-icon name="locate-outline" slot="start"></ion-icon>
+          Mi ubicación
+        </ion-button>
+      </div>
+
+      <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+
+      <section class="grid-dos">
+        <article class="dato">
+          <span>Distancia</span>
+          <strong>{{ km(distanciaKm) }}</strong>
+        </article>
+        <article class="dato">
+          <span>Duración</span>
+          <strong>{{ duracionTexto }}</strong>
+        </article>
+        <article class="dato">
+          <span>Combustible estimado</span>
+          <strong>{{ litrosEstimados.toFixed(2) }} L</strong>
+        </article>
+        <article class="dato destacado">
+          <span>Ingreso acumulado</span>
+          <strong>{{ dinero(ingresoAcumulado) }}</strong>
+        </article>
+      </section>
+
+      <section class="bloque">
+        <h2 class="titulo-seccion">Pago parcial</h2>
+        <ion-input
+          label="Monto"
+          label-placement="stacked"
+          type="number"
+          inputmode="decimal"
+          [(ngModel)]="pagoParcial"
+        ></ion-input>
+        <ion-button expand="block" class="boton-secundario" (click)="agregarPago()">Agregar pago</ion-button>
+      </section>
+    </ng-container>
+
+    <ng-template #formularioManual>
+      <section class="bloque">
+        <h1>Nuevo viaje manual</h1>
+        <ion-input label="Origen" label-placement="stacked" [(ngModel)]="manual.origen"></ion-input>
+        <ion-input label="Destino" label-placement="stacked" [(ngModel)]="manual.destino"></ion-input>
+        <ion-input
+          label="Kilómetros"
+          label-placement="stacked"
+          type="number"
+          inputmode="decimal"
+          [(ngModel)]="manual.distanciaKm"
+        ></ion-input>
+        <ion-input
+          label="Duración en minutos"
+          label-placement="stacked"
+          type="number"
+          inputmode="numeric"
+          [(ngModel)]="manual.duracionMinutos"
+        ></ion-input>
+        <ion-input
+          label="Ingreso"
+          label-placement="stacked"
+          type="number"
+          inputmode="decimal"
+          [(ngModel)]="manual.ingreso"
+        ></ion-input>
+        <ion-input
+          label="Gasto combustible"
+          label-placement="stacked"
+          type="number"
+          inputmode="decimal"
+          [(ngModel)]="manual.costoCombustible"
+        ></ion-input>
+        <ion-textarea label="Notas" label-placement="stacked" [(ngModel)]="manual.notas"></ion-textarea>
+        <ion-button expand="block" class="boton-principal" (click)="guardarManual()">Guardar viaje</ion-button>
+      </section>
+    </ng-template>
+  </main>
+</ion-content>

@@ -1,31 +1,23 @@
-<div class="ion-page">
-  <ion-tabs>
-    <ion-router-outlet></ion-router-outlet>
+<ion-tabs>
+  <ion-tab-bar slot="bottom">
+    <ion-tab-button tab="panel" href="/tabs/panel">
+      <ion-icon name="analytics-outline"></ion-icon>
+      <ion-label>Panel</ion-label>
+    </ion-tab-button>
 
-    <ion-tab-bar slot="bottom" class="barra-tabs">
-      <ion-tab-button tab="panel" [routerLink]="['/tabs/panel']" routerLinkActive="tab-activo">
-        <ion-icon name="grid-outline"></ion-icon>
-        <ion-label>Panel</ion-label>
-      </ion-tab-button>
+    <ion-tab-button tab="viajes" href="/tabs/viajes">
+      <ion-icon name="navigate-outline"></ion-icon>
+      <ion-label>Viajes</ion-label>
+    </ion-tab-button>
 
-      <ion-tab-button tab="viajes" [routerLink]="['/tabs/viajes']" routerLinkActive="tab-activo">
-        <ion-icon name="navigate-outline"></ion-icon>
-        <ion-label>Viajes</ion-label>
-      </ion-tab-button>
+    <ion-tab-button tab="historial" href="/tabs/historial">
+      <ion-icon name="map-outline"></ion-icon>
+      <ion-label>Historial</ion-label>
+    </ion-tab-button>
 
-      <ion-tab-button tab="historial" [routerLink]="['/tabs/historial']" routerLinkActive="tab-activo">
-        <ion-icon name="time-outline"></ion-icon>
-        <ion-label>Historial</ion-label>
-      </ion-tab-button>
-
-      <ion-tab-button
-        tab="configuracion"
-        [routerLink]="['/tabs/configuracion']"
-        routerLinkActive="tab-activo"
-      >
-        <ion-icon name="settings-outline"></ion-icon>
-        <ion-label>Ajustes</ion-label>
-      </ion-tab-button>
-    </ion-tab-bar>
-  </ion-tabs>
-</div>
+    <ion-tab-button tab="configuracion" href="/tabs/configuracion">
+      <ion-icon name="cog-outline"></ion-icon>
+      <ion-label>Ajustes</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

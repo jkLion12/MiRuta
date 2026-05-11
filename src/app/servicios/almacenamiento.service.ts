@@ -3,29 +3,20 @@ import { Storage } from '@ionic/storage-angular';
 
 @Injectable({ providedIn: 'root' })
 export class AlmacenamientoService {
-  private listo: Promise<void>;
+  private listo: Promise<Storage>;
 
   constructor(private readonly storage: Storage) {
-    this.listo = this.inicializar();
+    this.listo = this.storage.create();
   }
 
-  async obtener<T>(clave: string, valorPredeterminado: T): Promise<T> {
-    await this.listo;
-    const valor = await this.storage.get(clave);
-    return (valor ?? valorPredeterminado) as T;
+  async obtener<T>(clave: string, defecto: T): Promise<T> {
+    const storage = await this.listo;
+    const valor = (await storage.get(clave)) as T | null;
+    return valor ?? defecto;
   }
 
   async guardar<T>(clave: string, valor: T): Promise<void> {
-    await this.listo;
-    await this.storage.set(clave, valor);
-  }
-
-  async eliminar(clave: string): Promise<void> {
-    await this.listo;
-    await this.storage.remove(clave);
-  }
-
-  private async inicializar(): Promise<void> {
-    await this.storage.create();
+    const storage = await this.listo;
+    await storage.set(clave, valor);
   }
 }

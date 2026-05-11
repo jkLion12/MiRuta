@@ -1,63 +1,53 @@
-<div class="ion-page">
-  <ion-header translucent="true">
-    <ion-toolbar>
-      <ion-title>Ajustes</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Ajustes</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
-    <div class="pantalla">
-    <section class="tarjeta-formulario">
+<ion-content [scrollY]="true">
+  <main class="pantalla">
+    <section class="bloque">
       <h1>Configuración del vehículo</h1>
-      <form [formGroup]="formulario" class="formulario">
-        <ion-select
-          fill="outline"
-          label="Modo de rendimiento"
-          labelPlacement="stacked"
-          formControlName="rendimientoModo"
-        >
-          <ion-select-option value="km_l">km/l</ion-select-option>
-          <ion-select-option value="l_100km">l/100km</ion-select-option>
-        </ion-select>
+      <ion-input
+        label="Rendimiento km/L"
+        label-placement="stacked"
+        type="number"
+        inputmode="decimal"
+        [(ngModel)]="configuracion.rendimientoKmLitro"
+      ></ion-input>
+      <ion-input
+        label="Precio por litro"
+        label-placement="stacked"
+        type="number"
+        inputmode="decimal"
+        [(ngModel)]="configuracion.precioLitro"
+      ></ion-input>
+      <ion-input label="Moneda" label-placement="stacked" [(ngModel)]="configuracion.moneda"></ion-input>
 
-        <ion-input
-          fill="outline"
-          type="number"
-          label="Rendimiento"
-          labelPlacement="stacked"
-          formControlName="rendimientoValor"
-        ></ion-input>
+      <ion-select label="Unidad de distancia" label-placement="stacked" [(ngModel)]="configuracion.unidadDistancia">
+        <ion-select-option value="km">Kilómetros</ion-select-option>
+        <ion-select-option value="mi">Millas</ion-select-option>
+      </ion-select>
 
-        <ion-input
-          fill="outline"
-          type="number"
-          label="Precio por litro"
-          labelPlacement="stacked"
-          formControlName="precioCombustible"
-        ></ion-input>
+      <ion-select label="Tema" label-placement="stacked" [(ngModel)]="configuracion.tema">
+        <ion-select-option value="oscuro">Oscuro</ion-select-option>
+        <ion-select-option value="claro">Claro</ion-select-option>
+        <ion-select-option value="automatico">Automático</ion-select-option>
+      </ion-select>
 
-        <ion-input fill="outline" label="Moneda" labelPlacement="stacked" formControlName="moneda"></ion-input>
-
-        <ion-select
-          fill="outline"
-          label="Unidad de distancia"
-          labelPlacement="stacked"
-          formControlName="unidadDistancia"
-        >
-          <ion-select-option value="km">Kilómetros</ion-select-option>
-          <ion-select-option value="mi">Millas</ion-select-option>
-        </ion-select>
-
-        <ion-select fill="outline" label="Tema" labelPlacement="stacked" formControlName="tema">
-          <ion-select-option value="oscuro">Oscuro</ion-select-option>
-          <ion-select-option value="claro">Claro</ion-select-option>
-          <ion-select-option value="sistema">Sistema</ion-select-option>
-        </ion-select>
-      </form>
-
-      <ion-button expand="block" class="boton-principal" type="button" (click)="guardar()">Guardar ajustes</ion-button>
-      <ion-button expand="block" fill="outline" type="button" (click)="exportarCsv()">Exportar datos a CSV</ion-button>
+      <ion-button expand="block" class="boton-principal" (click)="guardar()">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Guardar ajustes
+      </ion-button>
     </section>
-    </div>
-  </ion-content>
-</div>
+
+    <section class="bloque bloque-suave">
+      <h2 class="titulo-seccion">Datos locales</h2>
+      <p class="subtexto">Los viajes se guardan en el almacenamiento interno de esta app en tu celular.</p>
+      <ion-button expand="block" fill="outline" (click)="exportarCsv()">
+        <ion-icon name="download-outline" slot="start"></ion-icon>
+        Exportar datos a CSV
+      </ion-button>
+    </section>
+  </main>
+</ion-content>

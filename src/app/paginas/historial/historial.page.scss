@@ -1,68 +1,84 @@
-.pantalla {
-  padding: 1rem 1rem 7.4rem;
-  display: grid;
-  gap: 0.9rem;
-  min-height: 100%;
-  align-content: start;
-  align-items: start;
-}
-
-.tarjeta-viaje,
 .vacio {
-  border-radius: 24px;
-  border: 1px solid var(--color-borde-suave);
-  background: var(--color-panel-terciario);
-  padding: 0.95rem;
-  box-shadow: 0 20px 38px rgba(4, 11, 20, 0.24);
-  align-self: start;
-}
-
-.contenido {
-  color: inherit;
-  text-decoration: none;
+  min-height: 180px;
+  align-items: center;
   display: grid;
-  gap: 0.7rem;
+  text-align: center;
 }
 
-.cabecera {
-  display: flex;
-  align-items: start;
-  justify-content: space-between;
-  gap: 0.9rem;
-}
-
-.cabecera p {
-  margin: 0 0 0.3rem;
-  color: var(--color-texto-muy-suave);
-}
-
-.cabecera h2 {
+.vacio h1 {
+  color: var(--app-texto);
   margin: 0;
-  font-size: 0.98rem;
+}
+
+.vacio p {
+  color: var(--app-texto-suave);
+  margin: 8px 0 0;
+}
+
+.lista {
+  display: grid;
+  gap: 12px;
+}
+
+.viaje {
+  background: var(--app-superficie);
+  border: 1px solid var(--app-borde);
+  border-radius: 8px;
+  box-shadow: var(--app-sombra);
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px;
+}
+
+.viaje span {
+  color: var(--app-texto-suave);
+  display: block;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+}
+
+.viaje strong {
+  color: var(--app-texto);
+  display: -webkit-box;
+  font-size: 0.95rem;
   line-height: 1.25;
-  word-break: break-word;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+ion-chip {
+  height: 28px;
+  margin: 0;
 }
 
 .metricas {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.45rem 0.8rem;
-  color: var(--color-texto-secundario);
-  font-size: 0.95rem;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
 }
 
-.metricas strong {
-  color: var(--color-texto-principal);
+.metricas p {
+  color: var(--app-texto);
+  font-weight: 800;
+  margin: 0;
 }
 
-.tarjeta-viaje ion-button {
-  margin-top: 0.45rem;
-  width: fit-content;
-  --padding-start: 0.65rem;
-  --padding-end: 0.65rem;
+.ganancia {
+  color: var(--app-rojo) !important;
 }
 
-.vacio {
-  text-align: center;
-  padding: 2.5rem 1rem;
+ion-button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  min-height: 34px;
+}
+
+@media (max-width: 380px) {
+  .metricas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

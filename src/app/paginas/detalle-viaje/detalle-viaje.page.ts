@@ -1,102 +1,62 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IonicModule, ToastController } from '@ionic/angular';
-import { MapaRutaComponent } from '../../componentes/mapa-ruta/mapa-ruta.component';
+
+import { MapaRutaComponent, CapaMapa } from '../../componentes/mapa-ruta/mapa-ruta.component';
 import { Viaje } from '../../modelos/viaje.model';
-import { ConfiguracionService } from '../../servicios/configuracion.service';
 import { ViajesService } from '../../servicios/viajes.service';
-import { formatearDuracion, formatearFecha, formatearMoneda } from '../../utilidades/formato';
 
 @Component({
   selector: 'app-detalle-viaje',
   standalone: true,
-  imports: [CommonModule, IonicModule, ReactiveFormsModule, MapaRutaComponent],
+  imports: [CommonModule, FormsModule, IonicModule, RouterLink, MapaRutaComponent],
   templateUrl: './detalle-viaje.page.html',
-  styleUrls: ['./detalle-viaje.page.scss'],
+  styleUrl: './detalle-viaje.page.scss',
 })
-export class DetalleViajePage {
-  readonly viaje = computed(() => this.viajesService.obtenerViajePorId(this.route.snapshot.paramMap.get('id') ?? ''));
-
-  readonly formulario = this.fb.group({
-    origen: ['', Validators.required],
-    destino: ['', Validators.required],
-    distanciaKm: [0, [Validators.required, Validators.min(0.1)]],
-    duracionSegundos: [0, [Validators.required, Validators.min(60)]],
-    ingreso: [0, [Validators.required, Validators.min(0)]],
-    costoCombustible: [0, [Validators.required, Validators.min(0)]],
-    notas: [''],
-  });
+export class DetalleViajePage implements OnInit {
+  viaje?: Viaje;
+  capa: CapaMapa = 'calles';
 
   constructor(
-    private readonly fb: FormBuilder,
-    private readonly route: ActivatedRoute,
-    private readonly router: Router,
-    public readonly configuracionService: ConfiguracionService,
-    public readonly viajesService: ViajesService,
-    private readonly toastController: ToastController,
-  ) {
-    const viaje = this.viaje();
-    if (viaje) {
-      this.cargarFormulario(viaje);
-    }
+    private readonly ruta: ActivatedRoute,
+    private readonly viajes: ViajesService,
+    private readonly toast: ToastController,
+  ) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.cargar();
   }
 
-  formatearFecha(valor: string): string {
-    return formatearFecha(valor);
+  async ionViewWillEnter(): Promise<void> {
+    await this.cargar();
   }
 
-  formatearDuracion(valor: number): string {
-    return formatearDuracion(valor);
-  }
-
-  formatearMoneda(valor: number): string {
-    return formatearMoneda(valor, this.configuracionService.configuracion().moneda);
-  }
-
-  async guardarCambios(): Promise<void> {
-    const original = this.viaje();
-    if (!original || this.formulario.invalid) {
-      this.formulario.markAllAsTouched();
+  async guardar(): Promise<void> {
+    if (!this.viaje) {
       return;
     }
 
-    const valor = this.formulario.getRawValue();
-    const viajeActualizado: Viaje = {
-      ...original,
-      origen: valor.origen ?? '',
-      destino: valor.destino ?? '',
-      distanciaKm: Number(valor.distanciaKm ?? 0),
-      duracionSegundos: Number(valor.duracionSegundos ?? 0),
-      ingreso: Number(valor.ingreso ?? 0),
-      costoCombustible: Number(valor.costoCombustible ?? 0),
-      gananciaNeta: Number((Number(valor.ingreso ?? 0) - Number(valor.costoCombustible ?? 0)).toFixed(2)),
-      notas: valor.notas ?? '',
-    };
+    await this.viajes.actualizar({
+      ...this.viaje,
+      distanciaKm: Number(this.viaje.distanciaKm) || 0,
+      duracionSegundos: Number(this.viaje.duracionSegundos) || 0,
+      ingreso: Number(this.viaje.ingreso) || 0,
+      costoCombustible: Number(this.viaje.costoCombustible) || 0,
+    });
 
-    await this.viajesService.actualizarViaje(viajeActualizado);
-    const toast = await this.toastController.create({
+    const toast = await this.toast.create({
       message: 'Cambios guardados.',
-      duration: 1800,
-      position: 'top',
+      duration: 1600,
+      position: 'bottom',
     });
     await toast.present();
   }
 
-  volver(): void {
-    void this.router.navigateByUrl('/historial');
-  }
-
-  private cargarFormulario(viaje: Viaje): void {
-    this.formulario.patchValue({
-      origen: viaje.origen,
-      destino: viaje.destino,
-      distanciaKm: viaje.distanciaKm,
-      duracionSegundos: viaje.duracionSegundos,
-      ingreso: viaje.ingreso,
-      costoCombustible: viaje.costoCombustible,
-      notas: viaje.notas ?? '',
-    });
+  private async cargar(): Promise<void> {
+    await this.viajes.cargar();
+    const id = this.ruta.snapshot.paramMap.get('id');
+    this.viaje = id ? this.viajes.porId(id) : undefined;
   }
 }

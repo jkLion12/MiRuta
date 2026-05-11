@@ -1,69 +1,78 @@
-<div class="ion-page">
-  <ion-header translucent="true">
-    <ion-toolbar>
-      <ion-buttons slot="start">
-      <ion-back-button defaultHref="/historial"></ion-back-button>
-      </ion-buttons>
-      <ion-title>Detalle del viaje</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/historial"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Detalle</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
-    <div class="pantalla">
-    @if (viaje(); as registro) {
-      <section class="resumen">
-        <p>{{ formatearFecha(registro.fechaInicio) }}</p>
-        <h1>{{ registro.origen }} → {{ registro.destino }}</h1>
-        <div class="chips">
-          <ion-chip>{{ registro.distanciaKm }} km</ion-chip>
-          <ion-chip>{{ formatearDuracion(registro.duracionSegundos) }}</ion-chip>
-          <ion-chip>{{ formatearMoneda(registro.gananciaNeta) }}</ion-chip>
-        </div>
+<ion-content [scrollY]="true">
+  <main class="pantalla" *ngIf="viaje; else noEncontrado">
+    <section class="mapa-contenedor">
+      <app-mapa-ruta
+        [puntos]="viaje.ruta"
+        [centro]="viaje.ruta.length ? viaje.ruta[0] : null"
+        [capa]="capa"
+        [seguirCentro]="false"
+      ></app-mapa-ruta>
+    </section>
+
+    <ion-segment [(ngModel)]="capa">
+      <ion-segment-button value="calles">
+        <ion-label>Calles</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="satelite">
+        <ion-label>Satélite</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <section class="bloque">
+      <h1>Editar registro</h1>
+      <ion-input label="Origen" label-placement="stacked" [(ngModel)]="viaje.origen"></ion-input>
+      <ion-input label="Destino" label-placement="stacked" [(ngModel)]="viaje.destino"></ion-input>
+      <ion-input
+        label="Distancia km"
+        label-placement="stacked"
+        type="number"
+        inputmode="decimal"
+        [(ngModel)]="viaje.distanciaKm"
+      ></ion-input>
+      <ion-input
+        label="Duración segundos"
+        label-placement="stacked"
+        type="number"
+        inputmode="numeric"
+        [(ngModel)]="viaje.duracionSegundos"
+      ></ion-input>
+      <ion-input
+        label="Ingreso"
+        label-placement="stacked"
+        type="number"
+        inputmode="decimal"
+        [(ngModel)]="viaje.ingreso"
+      ></ion-input>
+      <ion-input
+        label="Costo combustible"
+        label-placement="stacked"
+        type="number"
+        inputmode="decimal"
+        [(ngModel)]="viaje.costoCombustible"
+      ></ion-input>
+      <ion-textarea label="Notas" label-placement="stacked" [(ngModel)]="viaje.notas"></ion-textarea>
+      <ion-button expand="block" class="boton-principal" (click)="guardar()">
+        <ion-icon name="save-outline" slot="start"></ion-icon>
+        Guardar cambios
+      </ion-button>
+    </section>
+  </main>
+
+  <ng-template #noEncontrado>
+    <main class="pantalla">
+      <section class="bloque">
+        <h1>Viaje no encontrado</h1>
+        <ion-button expand="block" routerLink="/tabs/historial">Volver</ion-button>
       </section>
-
-      <app-mapa-ruta [puntosRuta]="registro.puntosRuta"></app-mapa-ruta>
-
-      <section class="tarjeta-formulario">
-        <h2>Editar registro</h2>
-        <form [formGroup]="formulario" class="formulario">
-          <ion-input fill="outline" label="Origen" labelPlacement="stacked" formControlName="origen"></ion-input>
-          <ion-input fill="outline" label="Destino" labelPlacement="stacked" formControlName="destino"></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Distancia km"
-            labelPlacement="stacked"
-            formControlName="distanciaKm"
-          ></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Duración segundos"
-            labelPlacement="stacked"
-            formControlName="duracionSegundos"
-          ></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Ingreso"
-            labelPlacement="stacked"
-            formControlName="ingreso"
-          ></ion-input>
-          <ion-input
-            fill="outline"
-            type="number"
-            label="Costo combustible"
-            labelPlacement="stacked"
-            formControlName="costoCombustible"
-          ></ion-input>
-          <ion-textarea fill="outline" label="Notas" labelPlacement="stacked" formControlName="notas"></ion-textarea>
-        </form>
-
-        <ion-button expand="block" class="boton-principal" type="button" (click)="guardarCambios()">
-          Guardar cambios
-        </ion-button>
-      </section>
-    }
-    </div>
-  </ion-content>
-</div>
+    </main>
+  </ng-template>
+</ion-content>

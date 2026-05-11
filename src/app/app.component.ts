@@ -1,27 +1,54 @@
-import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { IonApp, IonIcon, IonRouterOutlet } from '@ionic/angular/standalone';
+import { Component, OnInit } from '@angular/core';
+import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { Keyboard, KeyboardResize } from '@capacitor/keyboard';
+import { StatusBar, Style } from '@capacitor/status-bar';
+import { Capacitor } from '@capacitor/core';
 import { addIcons } from 'ionicons';
 import {
-  gridOutline,
+  analyticsOutline,
+  chevronBackOutline,
+  cogOutline,
+  downloadOutline,
+  locateOutline,
+  mapOutline,
   navigateOutline,
-  settingsOutline,
-  timeOutline,
+  saveOutline,
+  trashOutline,
+  walletOutline,
 } from 'ionicons/icons';
+
+import { ConfiguracionService } from './servicios/configuracion.service';
 
 @Component({
   selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrl: 'app.component.scss',
-  imports: [IonApp, IonIcon, IonRouterOutlet, RouterLink, RouterLinkActive],
+  standalone: true,
+  imports: [IonApp, IonRouterOutlet],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
 })
-export class AppComponent {
-  constructor() {
+export class AppComponent implements OnInit {
+  constructor(private readonly configuracion: ConfiguracionService) {
     addIcons({
-      'grid-outline': gridOutline,
-      'navigate-outline': navigateOutline,
-      'time-outline': timeOutline,
-      'settings-outline': settingsOutline,
+      analyticsOutline,
+      chevronBackOutline,
+      cogOutline,
+      downloadOutline,
+      locateOutline,
+      mapOutline,
+      navigateOutline,
+      saveOutline,
+      trashOutline,
+      walletOutline,
     });
+  }
+
+  async ngOnInit(): Promise<void> {
+    this.configuracion.aplicarTemaInicial();
+
+    if (Capacitor.isNativePlatform()) {
+      await StatusBar.setStyle({ style: Style.Dark }).catch(() => undefined);
+      await StatusBar.hide().catch(() => undefined);
+      await Keyboard.setResizeMode({ mode: KeyboardResize.Ionic }).catch(() => undefined);
+    }
   }
 }

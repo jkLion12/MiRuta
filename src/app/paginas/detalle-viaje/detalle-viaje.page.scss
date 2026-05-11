@@ -1,47 +1,17 @@
-.pantalla {
-  padding: 1rem 1rem 7.8rem;
-  display: grid;
-  gap: 1rem;
-  min-height: 100%;
+ion-segment {
+  margin: 12px 0 14px;
+  background: var(--app-superficie);
+  border: 1px solid var(--app-borde);
+  border-radius: 8px;
 }
 
-.resumen,
-.tarjeta-formulario {
-  border-radius: 24px;
-  border: 1px solid var(--color-borde-suave);
-  background: var(--color-panel-terciario);
-  padding: 1.1rem;
+h1 {
+  color: var(--app-texto);
+  font-size: 1.35rem;
+  margin: 0 0 14px;
 }
 
-.resumen p {
-  margin: 0;
-  color: var(--color-texto-suave);
-}
-
-.resumen h1 {
-  margin: 0.4rem 0 0.8rem;
-  font-size: 1.4rem;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-}
-
-.formulario {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.boton-principal {
-  margin-top: 1rem;
-  margin-bottom: 0.4rem;
-  --border-radius: 20px;
-}
-
-@media (min-width: 768px) {
-  .formulario {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+ion-input,
+ion-textarea {
+  margin-bottom: 12px;
 }

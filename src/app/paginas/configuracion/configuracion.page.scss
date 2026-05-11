@@ -1,32 +1,10 @@
-.pantalla {
-  padding: 1rem 1rem 7.4rem;
-  min-height: 100%;
+h1 {
+  color: var(--app-texto);
+  font-size: 1.55rem;
+  margin: 0 0 16px;
 }
 
-.tarjeta-formulario {
-  border-radius: 24px;
-  border: 1px solid var(--color-borde-suave);
-  background: var(--color-panel-secundario);
-  box-shadow: 0 20px 38px rgba(4, 11, 20, 0.24);
-  padding: 1.1rem;
-}
-
-.tarjeta-formulario h1 {
-  margin: 0 0 1rem;
-}
-
-.formulario {
-  display: grid;
-  gap: 0.9rem;
-}
-
-.boton-principal {
-  margin: 1rem 0 0.75rem;
-  --border-radius: 20px;
-}
-
-@media (min-width: 768px) {
-  .formulario {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+ion-input,
+ion-select {
+  margin-bottom: 12px;
 }

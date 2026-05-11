@@ -1,153 +1,174 @@
-/*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
-
-/* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
-
-/* Basic CSS for apps built with Ionic */
 @import "@ionic/angular/css/normalize.css";
 @import "@ionic/angular/css/structure.css";
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
-
-/* Optional CSS utils that can be commented out */
-@import "@ionic/angular/css/padding.css";
-@import "@ionic/angular/css/float-elements.css";
-@import "@ionic/angular/css/text-alignment.css";
-@import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+@import "@ionic/angular/css/padding.css";
+
 @import "leaflet/dist/leaflet.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
-
-:root {
-  --ion-font-family: "Segoe UI", "SF Pro Display", sans-serif;
-  --color-fondo-app:
-    radial-gradient(circle at top, rgba(127, 167, 184, 0.16), transparent 24%),
-    linear-gradient(180deg, #10202f 0%, #09131d 100%);
-  --color-texto-principal: #f7efed;
-  --color-texto-secundario: rgba(247, 239, 237, 0.72);
-  --color-texto-suave: rgba(247, 239, 237, 0.68);
-  --color-texto-muy-suave: rgba(247, 239, 237, 0.62);
-  --color-borde-suave: rgba(247, 239, 237, 0.08);
-  --color-borde-medio: rgba(127, 167, 184, 0.18);
-  --color-panel:
-    radial-gradient(circle at top right, rgba(127, 167, 184, 0.18), transparent 32%),
-    linear-gradient(180deg, rgba(14, 30, 46, 0.96), rgba(7, 18, 28, 0.96));
-  --color-panel-secundario:
-    radial-gradient(circle at top right, rgba(241, 72, 91, 0.16), transparent 28%),
-    linear-gradient(180deg, rgba(14, 29, 43, 0.96), rgba(7, 17, 27, 0.96));
-  --color-panel-terciario:
-    radial-gradient(circle at top right, rgba(127, 167, 184, 0.16), transparent 30%),
-    linear-gradient(180deg, rgba(13, 28, 42, 0.96), rgba(7, 17, 27, 0.96));
-  --color-panel-destacado:
-    radial-gradient(circle at top, rgba(241, 72, 91, 0.3), transparent 40%),
-    linear-gradient(180deg, rgba(49, 80, 104, 0.98), rgba(16, 25, 39, 0.98));
-  --color-toolbar: rgba(9, 19, 29, 0.66);
-  --color-barra-inferior: rgba(9, 19, 29, 0.95);
-  --color-input-fondo: rgba(247, 239, 237, 0.06);
-  --color-input-texto: #f7efed;
-  --color-barra-grafico-fondo: rgba(247, 239, 237, 0.08);
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
 body,
-ion-app,
+ion-app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--app-fondo);
+  color: var(--app-texto);
+}
+
 ion-content {
-  background: var(--color-fondo-app);
-  color: var(--color-texto-principal);
+  --background: var(--app-fondo);
+  color: var(--app-texto);
 }
 
-body.tema-claro {
-  --color-fondo-app:
-    radial-gradient(circle at top, rgba(127, 167, 184, 0.16), transparent 22%),
-    linear-gradient(180deg, #f7efed 0%, #ebe5e3 100%);
-  --color-texto-principal: #233749;
-  --color-texto-secundario: rgba(35, 55, 73, 0.78);
-  --color-texto-suave: rgba(35, 55, 73, 0.68);
-  --color-texto-muy-suave: rgba(35, 55, 73, 0.58);
-  --color-borde-suave: rgba(51, 84, 109, 0.12);
-  --color-borde-medio: rgba(51, 84, 109, 0.18);
-  --color-panel:
-    radial-gradient(circle at top right, rgba(127, 167, 184, 0.14), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(243, 238, 236, 0.96));
-  --color-panel-secundario:
-    radial-gradient(circle at top right, rgba(241, 72, 91, 0.12), transparent 26%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 239, 237, 0.98));
-  --color-panel-terciario:
-    radial-gradient(circle at top right, rgba(127, 167, 184, 0.14), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 239, 237, 0.98));
-  --color-panel-destacado:
-    radial-gradient(circle at top, rgba(241, 72, 91, 0.14), transparent 36%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 244, 248, 0.98));
-  --color-toolbar: rgba(247, 239, 237, 0.92);
-  --color-barra-inferior: rgba(247, 239, 237, 0.96);
-  --color-input-fondo: rgba(51, 84, 109, 0.06);
-  --color-input-texto: #233749;
-  --color-barra-grafico-fondo: rgba(51, 84, 109, 0.08);
-  background: var(--color-fondo-app);
-  color: var(--color-texto-principal);
-}
-
-.fondo-app {
-  --background: transparent;
+ion-header,
+ion-toolbar {
+  --background: var(--app-superficie);
+  --color: var(--app-texto);
 }
 
 ion-toolbar {
-  --background: var(--color-toolbar);
-  --border-color: transparent;
-  backdrop-filter: blur(14px);
+  --border-width: 0 0 1px 0;
+  --border-color: var(--app-borde);
 }
 
-ion-title,
-h1,
-h2,
-h3 {
-  letter-spacing: -0.02em;
-  color: var(--color-texto-principal);
+ion-title {
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+ion-tab-bar {
+  --background: var(--app-superficie);
+  --border: 1px solid var(--app-borde);
+  height: calc(72px + var(--ion-safe-area-bottom));
+  padding-bottom: var(--ion-safe-area-bottom);
+}
+
+ion-tab-button {
+  --color: var(--app-texto-suave);
+  --color-selected: var(--app-rojo);
+  font-weight: 700;
 }
 
 ion-button {
-  --background: #f1485b;
-  --background-hover: #ff5e70;
-  --box-shadow: 0 16px 30px rgba(241, 72, 91, 0.28);
-}
-
-ion-button[fill='outline'] {
-  --background: transparent;
-  --color: var(--color-texto-principal);
-  --border-color: rgba(127, 167, 184, 0.3);
-  --box-shadow: none;
+  min-height: 48px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 ion-input,
 ion-select,
 ion-textarea,
-ion-note,
-ion-label,
-ion-chip,
-label,
-p,
-span,
-strong,
-a,
-input {
-  color: var(--color-texto-principal);
+ion-datetime-button {
+  --background: var(--app-superficie);
+  --color: var(--app-texto);
+  --placeholder-color: var(--app-texto-suave);
+  --border-color: var(--app-borde);
+}
+
+.pantalla {
+  display: block;
+  padding: 16px;
+  padding-bottom: 24px;
+}
+
+.bloque {
+  background: var(--app-superficie);
+  border: 1px solid var(--app-borde);
+  border-radius: 8px;
+  box-shadow: var(--app-sombra);
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.bloque-suave {
+  background: var(--app-superficie-2);
+}
+
+.titulo-seccion {
+  margin: 0 0 12px;
+  color: var(--app-texto);
+  font-size: 1.05rem;
+  font-weight: 850;
+}
+
+.subtexto {
+  color: var(--app-texto-suave);
+  font-size: 0.92rem;
+}
+
+.grid-dos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dato {
+  min-height: 86px;
+  background: var(--app-superficie);
+  border: 1px solid var(--app-borde);
+  border-radius: 8px;
+  padding: 14px;
+  box-shadow: var(--app-sombra);
+}
+
+.dato span {
+  display: block;
+  color: var(--app-texto-suave);
+  font-size: 0.88rem;
+  margin-bottom: 8px;
+}
+
+.dato strong {
+  display: block;
+  color: var(--app-texto);
+  font-size: 1.2rem;
+}
+
+.boton-principal {
+  --background: var(--app-rojo);
+  --background-activated: #d93f50;
+  --color: #ffffff;
+  --border-radius: 8px;
+}
+
+.boton-secundario {
+  --background: var(--app-azul);
+  --background-activated: #29465c;
+  --color: #ffffff;
+  --border-radius: 8px;
+}
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: #dbe5e8;
+  touch-action: pan-x pan-y;
+}
+
+.mapa-contenedor {
+  height: 300px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid var(--app-borde);
+  background: #dbe5e8;
+}
+
+@media (max-width: 360px) {
+  .grid-dos {
+    grid-template-columns: 1fr;
+  }
+
+  .pantalla {
+    padding: 12px;
+  }
 }

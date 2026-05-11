@@ -1,28 +1,37 @@
 :root {
+  --ion-font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
   --ion-color-primary: #f1485b;
   --ion-color-primary-rgb: 241, 72, 91;
   --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-shade: #d54050;
-  --ion-color-primary-tint: #f35a6b;
-
   --ion-color-secondary: #7fa7b8;
-  --ion-color-secondary-rgb: 127, 167, 184;
-  --ion-color-secondary-contrast: #0b1720;
-  --ion-color-secondary-shade: #7093a2;
-  --ion-color-secondary-tint: #8cb0c0;
-
   --ion-color-tertiary: #33546d;
-  --ion-color-tertiary-rgb: 51, 84, 109;
-  --ion-color-tertiary-contrast: #f7efed;
-  --ion-color-tertiary-shade: #2d4a60;
-  --ion-color-tertiary-tint: #47667c;
+  --ion-color-success: #2f9e7e;
+  --ion-color-warning: #f5a524;
+  --ion-color-danger: #f1485b;
 
-  --ion-background-color: #09131d;
-  --ion-background-color-rgb: 9, 19, 29;
+  --app-rojo: #f1485b;
+  --app-azul: #33546d;
+  --app-celeste: #7fa7b8;
+  --app-crema: #f7efed;
+  --app-fondo: #f7efed;
+  --app-superficie: #ffffff;
+  --app-superficie-2: #f2e8e6;
+  --app-texto: #20384c;
+  --app-texto-suave: #66798a;
+  --app-borde: rgba(51, 84, 109, 0.16);
+  --app-sombra: 0 10px 26px rgba(51, 84, 109, 0.14);
+}
+
+html.dark,
+body.dark {
+  --ion-background-color: #071623;
   --ion-text-color: #f7efed;
-  --ion-text-color-rgb: 247, 239, 237;
-  --ion-card-background: rgba(14, 29, 43, 0.95);
-  --ion-toolbar-background: transparent;
-  --ion-item-background: transparent;
-  --ion-border-color: rgba(247, 239, 237, 0.08);
+  --app-fondo: #071623;
+  --app-superficie: #0e2333;
+  --app-superficie-2: #132e42;
+  --app-texto: #f7efed;
+  --app-texto-suave: #b7c7d1;
+  --app-borde: rgba(127, 167, 184, 0.22);
+  --app-sombra: 0 12px 28px rgba(0, 0, 0, 0.28);
 }

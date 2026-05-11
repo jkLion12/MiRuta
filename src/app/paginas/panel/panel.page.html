@@ -1,102 +1,68 @@
-<div class="ion-page">
-  <ion-header translucent="true">
-    <ion-toolbar>
-      <ion-title>MiRuta</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>MiRuta</ion-title>
+  </ion-toolbar>
+</ion-header>
 
-  <ion-content class="fondo-app" [scrollY]="true" [forceOverscroll]="true">
-    <div class="pantalla">
-    <section class="hero">
-      <p class="etiqueta">Panel inteligente</p>
-      <h1>Controla kilómetros, combustible e ingresos desde una sola vista.</h1>
-      <p class="descripcion">
-        Diseñado para motorizados que necesitan decisiones rápidas durante la jornada.
-      </p>
+<ion-content [scrollY]="true">
+  <main class="pantalla">
+    <section class="bloque hero">
+      <span>Panel inteligente</span>
+      <h1>Controla kilómetros, combustible e ingresos.</h1>
+      <p>Resumen rápido para tomar decisiones durante tu jornada.</p>
     </section>
 
-    <section class="filtros">
-      <div class="campo">
-        <label>Desde</label>
-        <input type="date" [value]="fechaInicio()" (input)="actualizarFechaInicio($event)" />
+    <section class="bloque">
+      <h2 class="titulo-seccion">Filtro</h2>
+      <div class="grid-dos">
+        <ion-input label="Desde" label-placement="stacked" type="date" [(ngModel)]="desde"></ion-input>
+        <ion-input label="Hasta" label-placement="stacked" type="date" [(ngModel)]="hasta"></ion-input>
       </div>
-      <div class="campo">
-        <label>Hasta</label>
-        <input type="date" [value]="fechaFin()" (input)="actualizarFechaFin($event)" />
-      </div>
-      <ion-button fill="outline" size="small" (click)="limpiarFiltros()">Limpiar</ion-button>
+      <ion-button expand="block" fill="outline" class="accion" (click)="actualizar()">Aplicar filtro</ion-button>
+      <ion-button expand="block" fill="clear" (click)="limpiar()">Limpiar</ion-button>
     </section>
 
-    <section class="rejilla-kpis">
-      <article class="tarjeta-kpi">
+    <section class="grid-dos">
+      <article class="dato">
         <span>Kilómetros</span>
-        <strong>{{ indicadores().kilometros }} {{ unidadDistancia() }}</strong>
+        <strong>{{ km(resumen.totalKm) }}</strong>
       </article>
-      <article class="tarjeta-kpi destacado">
+      <article class="dato destacado">
         <span>Ingresos</span>
-        <strong>{{ formatearMoneda(indicadores().ingresos) }}</strong>
+        <strong>{{ dinero(resumen.totalIngresos) }}</strong>
       </article>
-      <article class="tarjeta-kpi">
+      <article class="dato">
         <span>Combustible</span>
-        <strong>{{ formatearMoneda(indicadores().combustible) }}</strong>
+        <strong>{{ dinero(resumen.totalCombustible) }}</strong>
       </article>
-      <article class="tarjeta-kpi">
+      <article class="dato">
         <span>Ganancia neta</span>
-        <strong>{{ formatearMoneda(indicadores().ganancia) }}</strong>
+        <strong>{{ dinero(resumen.gananciaNeta) }}</strong>
       </article>
     </section>
 
-    <section class="tarjeta-doble">
-      <article class="tarjeta-panel">
-        <div class="encabezado-tarjeta">
-          <h2>Ingreso por km</h2>
-          <span>{{ formatearMoneda(indicadores().ingresoPorKm) }}</span>
-        </div>
-        <p>Qué tan rentable está siendo tu ruta en el periodo filtrado.</p>
-      </article>
-
-      <article class="tarjeta-panel">
-        <div class="encabezado-tarjeta">
-          <h2>Viajes guardados</h2>
-          <span>{{ viajesService.totalViajes() }}</span>
-        </div>
-        <p>Incluye viajes GPS y registros manuales almacenados localmente.</p>
-      </article>
-    </section>
-
-    <section class="grafico">
-      <div class="encabezado-tarjeta">
-        <h2>Ingresos últimos 7 días</h2>
-        <span>{{ configuracionService.configuracion().moneda }}</span>
+    <section class="bloque">
+      <div class="fila">
+        <h2 class="titulo-seccion">Ingreso por km</h2>
+        <strong>{{ dinero(resumen.ingresoPorKm) }}</strong>
       </div>
-
-      @for (item of serieIngresos(); track item.etiqueta) {
-        <div class="fila-grafico">
-          <label>{{ item.etiqueta }}</label>
-          <div class="barra">
-            <span [style.width.%]="porcentajeBarra(item.valor, valorMaximoIngresos())"></span>
-          </div>
-          <strong>{{ formatearMoneda(item.valor) }}</strong>
-        </div>
-      }
+      <p class="subtexto">Mientras más alto sea este valor, más rentable está siendo tu ruta.</p>
     </section>
 
-    <section class="grafico">
-      <div class="encabezado-tarjeta">
-        <h2>Kilómetros últimos 7 días</h2>
-        <span>{{ unidadDistancia() }}</span>
+    <section class="bloque">
+      <h2 class="titulo-seccion">Últimos días</h2>
+      <div class="barras" *ngIf="barras.length; else sinDatos">
+        <div class="barra" *ngFor="let barra of barras">
+          <span>{{ barra.etiqueta }}</span>
+          <div class="riel">
+            <i [style.width.%]="barra.porcentaje"></i>
+          </div>
+          <strong>{{ km(barra.km) }}</strong>
+        </div>
       </div>
-
-      @for (item of serieKm(); track item.etiqueta) {
-        <div class="fila-grafico">
-          <label>{{ item.etiqueta }}</label>
-          <div class="barra barra-secundaria">
-            <span [style.width.%]="porcentajeBarra(item.valor, valorMaximoKm())"></span>
-          </div>
-          <strong>{{ item.valor }}</strong>
-        </div>
-      }
+      <ng-template #sinDatos>
+        <p class="subtexto">Aún no hay viajes registrados.</p>
+      </ng-template>
     </section>
-    </div>
-  </ion-content>
-</div>
+  </main>
+</ion-content>
