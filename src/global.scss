@@ -39,21 +39,71 @@
 
 :root {
   --ion-font-family: "Segoe UI", "SF Pro Display", sans-serif;
+  --color-fondo-app:
+    radial-gradient(circle at top, rgba(127, 167, 184, 0.16), transparent 24%),
+    linear-gradient(180deg, #10202f 0%, #09131d 100%);
+  --color-texto-principal: #f7efed;
+  --color-texto-secundario: rgba(247, 239, 237, 0.72);
+  --color-texto-suave: rgba(247, 239, 237, 0.68);
+  --color-texto-muy-suave: rgba(247, 239, 237, 0.62);
+  --color-borde-suave: rgba(247, 239, 237, 0.08);
+  --color-borde-medio: rgba(127, 167, 184, 0.18);
+  --color-panel:
+    radial-gradient(circle at top right, rgba(127, 167, 184, 0.18), transparent 32%),
+    linear-gradient(180deg, rgba(14, 30, 46, 0.96), rgba(7, 18, 28, 0.96));
+  --color-panel-secundario:
+    radial-gradient(circle at top right, rgba(241, 72, 91, 0.16), transparent 28%),
+    linear-gradient(180deg, rgba(14, 29, 43, 0.96), rgba(7, 17, 27, 0.96));
+  --color-panel-terciario:
+    radial-gradient(circle at top right, rgba(127, 167, 184, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(13, 28, 42, 0.96), rgba(7, 17, 27, 0.96));
+  --color-panel-destacado:
+    radial-gradient(circle at top, rgba(241, 72, 91, 0.3), transparent 40%),
+    linear-gradient(180deg, rgba(49, 80, 104, 0.98), rgba(16, 25, 39, 0.98));
+  --color-toolbar: rgba(9, 19, 29, 0.66);
+  --color-barra-inferior: rgba(9, 19, 29, 0.95);
+  --color-input-fondo: rgba(247, 239, 237, 0.06);
+  --color-input-texto: #f7efed;
+  --color-barra-grafico-fondo: rgba(247, 239, 237, 0.08);
 }
 
 html,
 body,
 ion-app,
 ion-content {
-  background:
-    radial-gradient(circle at top, rgba(127, 167, 184, 0.16), transparent 24%),
-    linear-gradient(180deg, #10202f 0%, #09131d 100%);
-  color: #f7efed;
+  background: var(--color-fondo-app);
+  color: var(--color-texto-principal);
 }
 
 body.tema-claro {
-  background: linear-gradient(180deg, #f7efed 0%, #ebe5e3 100%);
-  color: #233749;
+  --color-fondo-app:
+    radial-gradient(circle at top, rgba(127, 167, 184, 0.16), transparent 22%),
+    linear-gradient(180deg, #f7efed 0%, #ebe5e3 100%);
+  --color-texto-principal: #233749;
+  --color-texto-secundario: rgba(35, 55, 73, 0.78);
+  --color-texto-suave: rgba(35, 55, 73, 0.68);
+  --color-texto-muy-suave: rgba(35, 55, 73, 0.58);
+  --color-borde-suave: rgba(51, 84, 109, 0.12);
+  --color-borde-medio: rgba(51, 84, 109, 0.18);
+  --color-panel:
+    radial-gradient(circle at top right, rgba(127, 167, 184, 0.14), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(243, 238, 236, 0.96));
+  --color-panel-secundario:
+    radial-gradient(circle at top right, rgba(241, 72, 91, 0.12), transparent 26%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 239, 237, 0.98));
+  --color-panel-terciario:
+    radial-gradient(circle at top right, rgba(127, 167, 184, 0.14), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 239, 237, 0.98));
+  --color-panel-destacado:
+    radial-gradient(circle at top, rgba(241, 72, 91, 0.14), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(236, 244, 248, 0.98));
+  --color-toolbar: rgba(247, 239, 237, 0.92);
+  --color-barra-inferior: rgba(247, 239, 237, 0.96);
+  --color-input-fondo: rgba(51, 84, 109, 0.06);
+  --color-input-texto: #233749;
+  --color-barra-grafico-fondo: rgba(51, 84, 109, 0.08);
+  background: var(--color-fondo-app);
+  color: var(--color-texto-principal);
 }
 
 .fondo-app {
@@ -61,13 +111,9 @@ body.tema-claro {
 }
 
 ion-toolbar {
-  --background: rgba(9, 19, 29, 0.66);
+  --background: var(--color-toolbar);
   --border-color: transparent;
   backdrop-filter: blur(14px);
-}
-
-body.tema-claro ion-toolbar {
-  --background: rgba(247, 239, 237, 0.82);
 }
 
 ion-title,
@@ -75,6 +121,7 @@ h1,
 h2,
 h3 {
   letter-spacing: -0.02em;
+  color: var(--color-texto-principal);
 }
 
 ion-button {
@@ -85,11 +132,22 @@ ion-button {
 
 ion-button[fill='outline'] {
   --background: transparent;
-  --color: #f7efed;
+  --color: var(--color-texto-principal);
   --border-color: rgba(127, 167, 184, 0.3);
   --box-shadow: none;
 }
 
-body.tema-claro ion-button[fill='outline'] {
-  --color: #33546d;
+ion-input,
+ion-select,
+ion-textarea,
+ion-note,
+ion-label,
+ion-chip,
+label,
+p,
+span,
+strong,
+a,
+input {
+  color: var(--color-texto-principal);
 }

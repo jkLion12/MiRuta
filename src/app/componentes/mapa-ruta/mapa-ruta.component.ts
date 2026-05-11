@@ -5,6 +5,7 @@ import {
   ElementRef,
   Input,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
@@ -15,16 +16,32 @@ import { PuntoRuta } from '../../modelos/viaje.model';
   selector: 'app-mapa-ruta',
   standalone: true,
   imports: [CommonModule],
-  template: `<div class="mapa" #contenedorMapa></div>`,
+  template: `
+    <div class="contenedor-mapa">
+      <div class="controles-mapa">
+        <button type="button" [class.activo]="modoMapa === 'calles'" (click)="cambiarModoMapa('calles')">
+          Calles
+        </button>
+        <button type="button" [class.activo]="modoMapa === 'satelite'" (click)="cambiarModoMapa('satelite')">
+          Satélite
+        </button>
+      </div>
+      <div class="mapa" #contenedorMapa></div>
+    </div>
+  `,
   styleUrls: ['./mapa-ruta.component.scss'],
 })
-export class MapaRutaComponent implements AfterViewInit, OnChanges {
+export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
   @Input() puntosRuta: PuntoRuta[] = [];
+  @Input() centroInicial?: PuntoRuta | null;
   @ViewChild('contenedorMapa') private contenedorMapa?: ElementRef<HTMLDivElement>;
 
   private mapa?: L.Map;
   private capaRuta?: L.Polyline;
   private capaPuntos?: L.FeatureGroup;
+  private capaBaseActual?: L.TileLayer;
+  private observadorTamano?: ResizeObserver;
+  modoMapa: 'calles' | 'satelite' = 'calles';
 
   ngAfterViewInit(): void {
     this.inicializarMapa();
@@ -32,9 +49,19 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['puntosRuta'] && this.mapa) {
+    if ((changes['puntosRuta'] || changes['centroInicial']) && this.mapa) {
       this.actualizarMapa();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.observadorTamano?.disconnect();
+    this.mapa?.remove();
+  }
+
+  cambiarModoMapa(modo: 'calles' | 'satelite'): void {
+    this.modoMapa = modo;
+    this.aplicarCapaBase();
   }
 
   private inicializarMapa(): void {
@@ -47,12 +74,12 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges {
       attributionControl: false,
     }).setView([-12.0464, -77.0428], 13);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-    }).addTo(this.mapa);
-
+    this.aplicarCapaBase();
     L.control.zoom({ position: 'bottomright' }).addTo(this.mapa);
     this.capaPuntos = L.featureGroup().addTo(this.mapa);
+    this.observadorTamano = new ResizeObserver(() => this.invalidarTamanoMapa());
+    this.observadorTamano.observe(this.contenedorMapa.nativeElement);
+    this.invalidarTamanoMapa();
   }
 
   private actualizarMapa(): void {
@@ -64,11 +91,37 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges {
     this.capaPuntos.clearLayers();
 
     if (!this.puntosRuta.length) {
-      this.mapa.setView([-12.0464, -77.0428], 12);
+      if (this.centroInicial) {
+        this.mapa.setView([this.centroInicial.latitud, this.centroInicial.longitud], 16);
+        L.circleMarker([this.centroInicial.latitud, this.centroInicial.longitud], {
+          radius: 9,
+          color: '#f7efed',
+          weight: 2,
+          fillColor: '#f1485b',
+          fillOpacity: 1,
+        }).addTo(this.capaPuntos);
+      } else {
+        this.mapa.setView([-12.0464, -77.0428], 12);
+      }
+      this.invalidarTamanoMapa();
       return;
     }
 
     const latLngs = this.puntosRuta.map((punto) => L.latLng(punto.latitud, punto.longitud));
+    if (latLngs.length === 1) {
+      const unicoPunto = latLngs[0];
+      L.circleMarker(unicoPunto, {
+        radius: 9,
+        color: '#f7efed',
+        weight: 2,
+        fillColor: '#f1485b',
+        fillOpacity: 1,
+      }).addTo(this.capaPuntos);
+      this.mapa.setView(unicoPunto, 17);
+      this.invalidarTamanoMapa();
+      return;
+    }
+
     this.capaRuta = L.polyline(latLngs, {
       color: '#f1485b',
       weight: 5,
@@ -99,5 +152,39 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges {
       padding: [24, 24],
       maxZoom: 16,
     });
+    this.invalidarTamanoMapa();
+  }
+
+  private aplicarCapaBase(): void {
+    if (!this.mapa) {
+      return;
+    }
+
+    this.capaBaseActual?.remove();
+    this.capaBaseActual =
+      this.modoMapa === 'satelite'
+        ? L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            {
+              maxZoom: 19,
+            },
+          )
+        : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+          });
+
+    this.capaBaseActual.addTo(this.mapa);
+    this.capaBaseActual.on('load', () => this.invalidarTamanoMapa());
+  }
+
+  private invalidarTamanoMapa(): void {
+    if (!this.mapa) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      this.mapa?.invalidateSize();
+    });
+    setTimeout(() => this.mapa?.invalidateSize(), 150);
   }
 }

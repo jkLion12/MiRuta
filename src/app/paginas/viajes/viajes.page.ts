@@ -51,6 +51,7 @@ export class ViajesPage {
     if (!activo) {
       return '00:00:00';
     }
+
     const segundos = Math.floor((this.tiempoActual() - new Date(activo.fechaInicio).getTime()) / 1000);
     return formatearDuracion(Math.max(0, segundos));
   });
@@ -63,6 +64,7 @@ export class ViajesPage {
     private readonly toastController: ToastController,
   ) {
     setInterval(() => this.tiempoActual.set(Date.now()), 1000);
+    void this.cargarUbicacionInicial();
   }
 
   cambiarSegmento(valor: 'gps' | 'manual'): void {
@@ -71,11 +73,20 @@ export class ViajesPage {
 
   manejarCambioSegmento(valor: string | number | null | undefined): void {
     this.segmento.set(valor === 'manual' ? 'manual' : 'gps');
+    if ((valor === 'gps' || valor === null || valor === undefined) && !this.viajesService.viajeActivo()) {
+      void this.cargarUbicacionInicial();
+    }
   }
 
   async iniciarViaje(): Promise<void> {
-    await this.viajesService.iniciarViaje();
-    await this.mostrarToast('Viaje iniciado. El GPS ya está registrando la ruta.');
+    const iniciadoConUbicacion = await this.viajesService.iniciarViaje();
+
+    if (iniciadoConUbicacion) {
+      await this.mostrarToast('Viaje iniciado. El GPS ya esta registrando la ruta.');
+      return;
+    }
+
+    await this.mostrarToast(this.ubicacionService.error() ?? 'No fue posible obtener tu ubicacion actual.');
   }
 
   async agregarIngresoParcial(): Promise<void> {
@@ -163,5 +174,13 @@ export class ViajesPage {
       position: 'top',
     });
     await toast.present();
+  }
+
+  private async cargarUbicacionInicial(): Promise<void> {
+    if (this.viajesService.viajeActivo()) {
+      return;
+    }
+
+    await this.ubicacionService.actualizarUbicacionActual();
   }
 }

@@ -41,7 +41,10 @@
         }
       </section>
 
-      <app-mapa-ruta [puntosRuta]="viajesService.viajeActivo()?.puntosRuta ?? []"></app-mapa-ruta>
+      <app-mapa-ruta
+        [puntosRuta]="viajesService.viajeActivo()?.puntosRuta ?? []"
+        [centroInicial]="ubicacionService.ubicacionActual()"
+      ></app-mapa-ruta>
 
       @if (ubicacionService.error()) {
         <ion-note color="danger">{{ ubicacionService.error() }}</ion-note>

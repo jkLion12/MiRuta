@@ -3,6 +3,7 @@ export interface PuntoRuta {
   longitud: number;
   marcaTiempo: string;
   velocidadKmh?: number;
+  precisionMetros?: number;
 }
 
 export interface Viaje {

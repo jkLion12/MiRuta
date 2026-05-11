@@ -56,7 +56,7 @@ export class ViajesService {
     return this.viajes().find((viaje) => viaje.id === id);
   }
 
-  async iniciarViaje(): Promise<void> {
+  async iniciarViaje(): Promise<boolean> {
     const viaje: ViajeEnCurso = {
       id: crypto.randomUUID(),
       fechaInicio: new Date().toISOString(),
@@ -69,7 +69,19 @@ export class ViajesService {
 
     this.viajeActivo.set(viaje);
     await this.almacenamiento.guardar(CLAVE_VIAJE_ACTIVO, viaje);
-    await this.ubicacionService.iniciarSeguimiento();
+    const puntoInicial = await this.ubicacionService.iniciarSeguimiento();
+
+    if (puntoInicial) {
+      const actualizado: ViajeEnCurso = {
+        ...viaje,
+        puntosRuta: [puntoInicial],
+      };
+      this.viajeActivo.set(actualizado);
+      await this.almacenamiento.guardar(CLAVE_VIAJE_ACTIVO, actualizado);
+      return true;
+    }
+
+    return false;
   }
 
   async agregarIngresoParcial(monto: number): Promise<void> {

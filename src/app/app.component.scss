@@ -8,15 +8,15 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 0.35rem;
   padding: 0.45rem 0.55rem calc(0.55rem + env(safe-area-inset-bottom));
-  background: rgba(9, 19, 29, 0.95);
-  border-top: 1px solid rgba(247, 239, 237, 0.08);
+  background: var(--color-barra-inferior);
+  border-top: 1px solid var(--color-borde-suave);
   backdrop-filter: blur(16px);
 }
 
 .barra-app a {
   min-height: 58px;
   border-radius: 18px;
-  color: rgba(247, 239, 237, 0.68);
+  color: var(--color-texto-suave);
   text-decoration: none;
   display: flex;
   flex-direction: column;
@@ -31,6 +31,6 @@
 }
 
 .barra-app a.activo {
-  color: #f7efed;
+  color: var(--color-texto-principal);
   background: linear-gradient(135deg, rgba(127, 167, 184, 0.24), rgba(241, 72, 91, 0.18));
 }

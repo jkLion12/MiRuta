@@ -11,10 +11,8 @@
 .grafico,
 .tarjeta-kpi {
   border-radius: 26px;
-  border: 1px solid rgba(247, 239, 237, 0.08);
-  background:
-    radial-gradient(circle at top right, rgba(127, 167, 184, 0.18), transparent 32%),
-    linear-gradient(180deg, rgba(14, 30, 46, 0.96), rgba(7, 18, 28, 0.96));
+  border: 1px solid var(--color-borde-suave);
+  background: var(--color-panel);
   box-shadow: 0 22px 40px rgba(3, 10, 19, 0.28);
 }
 
@@ -29,7 +27,7 @@
 }
 
 .etiqueta {
-  color: #7fa7b8;
+  color: var(--ion-color-secondary);
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
@@ -38,7 +36,7 @@
 
 .descripcion {
   margin: 0;
-  color: rgba(247, 239, 237, 0.74);
+  color: var(--color-texto-secundario);
 }
 
 .filtros {
@@ -53,14 +51,14 @@
 }
 
 .campo label {
-  color: rgba(247, 239, 237, 0.72);
+  color: var(--color-texto-secundario);
   font-size: 0.85rem;
 }
 
 .campo input {
-  border: 1px solid rgba(127, 167, 184, 0.18);
-  background: rgba(247, 239, 237, 0.06);
-  color: #f7efed;
+  border: 1px solid var(--color-borde-medio);
+  background: var(--color-input-fondo);
+  color: var(--color-input-texto);
   padding: 0.9rem 1rem;
   border-radius: 16px;
 }
@@ -84,7 +82,7 @@
 .tarjeta-kpi span,
 .tarjeta-panel p,
 .encabezado-tarjeta span {
-  color: rgba(247, 239, 237, 0.68);
+  color: var(--color-texto-suave);
 }
 
 .tarjeta-kpi strong {
@@ -92,9 +90,7 @@
 }
 
 .destacado {
-  background:
-    radial-gradient(circle at top, rgba(241, 72, 91, 0.3), transparent 40%),
-    linear-gradient(180deg, rgba(49, 80, 104, 0.98), rgba(16, 25, 39, 0.98));
+  background: var(--color-panel-destacado);
 }
 
 .tarjeta-panel,
@@ -127,14 +123,14 @@
 }
 
 .fila-grafico label {
-  color: rgba(247, 239, 237, 0.68);
+  color: var(--color-texto-suave);
   font-size: 0.8rem;
 }
 
 .barra {
   height: 11px;
   border-radius: 999px;
-  background: rgba(247, 239, 237, 0.08);
+  background: var(--color-barra-grafico-fondo);
   overflow: hidden;
 }
 
