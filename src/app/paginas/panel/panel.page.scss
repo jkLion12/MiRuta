@@ -21,7 +21,8 @@
 }
 
 .hero p,
-.fila {
+.fila,
+.titulo-seccion {
   margin: 0;
 }
 
@@ -45,34 +46,196 @@
   gap: 12px;
 }
 
-.barras {
+.fila strong {
+  color: var(--app-texto);
+  white-space: nowrap;
+}
+
+.meta-layout {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 132px;
+  gap: 18px;
+}
+
+.anillo {
+  align-items: center;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  justify-items: center;
+  padding: 12px;
+}
+
+.anillo div {
+  align-items: center;
+  background: var(--app-superficie);
+  border-radius: 50%;
+  display: grid;
+  height: 100%;
+  justify-items: center;
+  padding: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+.anillo strong {
+  color: var(--app-texto);
+  font-size: 1.55rem;
+}
+
+.anillo span {
+  color: var(--app-texto-suave);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.grafico-columnas {
+  align-items: end;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.columna {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  text-align: center;
+}
+
+.columna-riel {
+  align-items: end;
+  background: var(--app-superficie-2);
+  border-radius: 8px;
+  display: flex;
+  height: 118px;
+  overflow: hidden;
+}
+
+.columna-riel i {
+  background: linear-gradient(180deg, var(--app-rojo), var(--app-azul));
+  display: block;
+  min-height: 4px;
+  width: 100%;
+}
+
+.columna span,
+.barra span,
+.comparativo-dia span {
+  color: var(--app-texto-suave);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.columna strong,
+.barra strong {
+  color: var(--app-texto);
+  font-size: 0.72rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barras,
+.comparativo {
   display: grid;
   gap: 12px;
+  margin-top: 14px;
 }
 
 .barra {
   align-items: center;
   display: grid;
-  grid-template-columns: 44px 1fr 70px;
+  grid-template-columns: 44px 1fr 76px;
   gap: 10px;
 }
 
-.barra span,
-.barra strong {
-  color: var(--app-texto);
-  font-size: 0.88rem;
+.riel,
+.comparativo-barras {
+  background: var(--app-superficie-2);
+  border-radius: 999px;
+  overflow: hidden;
 }
 
 .riel {
   height: 10px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--app-superficie-2);
 }
 
 .riel i {
+  background: var(--app-rojo);
   display: block;
   height: 100%;
   min-width: 4px;
+}
+
+.comparativo-dia {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 44px 1fr 78px;
+  gap: 10px;
+}
+
+.comparativo-barras {
+  display: grid;
+  gap: 4px;
+  padding: 3px;
+}
+
+.comparativo-barras i {
+  border-radius: 999px;
+  display: block;
+  height: 8px;
+}
+
+.ganancia {
+  background: var(--app-celeste);
+}
+
+.combustible {
   background: var(--app-rojo);
+}
+
+.comparativo-dia small {
+  color: var(--app-texto);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.leyenda {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.leyenda span {
+  align-items: center;
+  color: var(--app-texto-suave);
+  display: inline-flex;
+  font-size: 0.82rem;
+  gap: 6px;
+}
+
+.leyenda i {
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+}
+
+ion-input {
+  margin: 12px 0;
+}
+
+@media (max-width: 380px) {
+  .meta-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .anillo {
+    justify-self: center;
+    width: 132px;
+  }
 }

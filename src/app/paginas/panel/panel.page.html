@@ -50,19 +50,78 @@
     </section>
 
     <section class="bloque">
-      <h2 class="titulo-seccion">Últimos días</h2>
-      <div class="barras" *ngIf="barras.length; else sinDatos">
-        <div class="barra" *ngFor="let barra of barras">
-          <span>{{ barra.etiqueta }}</span>
-          <div class="riel">
-            <i [style.width.%]="barra.porcentaje"></i>
+      <div class="meta-layout">
+        <div>
+          <h2 class="titulo-seccion">Meta de ganancia de hoy</h2>
+          <p class="subtexto">
+            {{ metaCumplida ? 'Meta cumplida. Buen cierre para hoy.' : 'Falta ' + dinero(faltaMeta) + ' para cumplirla.' }}
+          </p>
+          <ion-input
+            label="Meta diaria"
+            label-placement="stacked"
+            type="number"
+            inputmode="decimal"
+            [(ngModel)]="metaHoy"
+          ></ion-input>
+          <ion-button expand="block" class="boton-secundario" (click)="guardarMeta()">Guardar meta</ion-button>
+        </div>
+        <div class="anillo" [style.background]="avanceMetaConico">
+          <div>
+            <strong>{{ progresoMeta.toFixed(0) }}%</strong>
+            <span>{{ dinero(gananciaHoy) }}</span>
           </div>
-          <strong>{{ km(barra.km) }}</strong>
         </div>
       </div>
-      <ng-template #sinDatos>
-        <p class="subtexto">Aún no hay viajes registrados.</p>
-      </ng-template>
+    </section>
+
+    <section class="bloque">
+      <div class="fila">
+        <h2 class="titulo-seccion">Ingresos últimos 7 días</h2>
+        <strong>{{ dinero(ingresoHoy) }} hoy</strong>
+      </div>
+      <div class="grafico-columnas">
+        <div class="columna" *ngFor="let dia of ultimosSieteDias">
+          <div class="columna-riel">
+            <i [style.height.%]="dia.porcentajeIngresos"></i>
+          </div>
+          <span>{{ dia.etiqueta }}</span>
+          <strong>{{ dinero(dia.ingresos) }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <h2 class="titulo-seccion">Kilómetros últimos 7 días</h2>
+      <div class="barras">
+        <div class="barra" *ngFor="let dia of ultimosSieteDias">
+          <span>{{ dia.etiqueta }}</span>
+          <div class="riel">
+            <i [style.width.%]="dia.porcentajeKm"></i>
+          </div>
+          <strong>{{ km(dia.km) }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="bloque">
+      <div class="fila">
+        <h2 class="titulo-seccion">Ganancia vs combustible</h2>
+        <strong *ngIf="mejorDia">Mejor: {{ mejorDia.etiqueta }}</strong>
+      </div>
+      <div class="comparativo">
+        <div class="comparativo-dia" *ngFor="let dia of ultimosSieteDias">
+          <span>{{ dia.etiqueta }}</span>
+          <div class="comparativo-barras">
+            <i class="ganancia" [style.width.%]="dia.porcentajeGanancia"></i>
+            <i class="combustible" [style.width.%]="dia.porcentajeCombustible"></i>
+          </div>
+          <small>{{ dinero(dia.ganancia) }}</small>
+        </div>
+      </div>
+      <div class="leyenda">
+        <span><i class="ganancia"></i> Ganancia</span>
+        <span><i class="combustible"></i> Combustible</span>
+      </div>
     </section>
   </main>
 </ion-content>
