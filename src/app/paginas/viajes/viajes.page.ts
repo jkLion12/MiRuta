@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule, ToastController, ViewWillEnter } from '@ionic/angular';
 import { MapaRutaComponent } from '../../componentes/mapa-ruta/mapa-ruta.component';
 import { ConfiguracionService } from '../../servicios/configuracion.service';
 import { UbicacionService } from '../../servicios/ubicacion.service';
@@ -19,7 +19,7 @@ import {
   templateUrl: './viajes.page.html',
   styleUrls: ['./viajes.page.scss'],
 })
-export class ViajesPage {
+export class ViajesPage implements ViewWillEnter {
   readonly segmento = signal<'gps' | 'manual'>('gps');
   readonly mostrarFormularioCierre = signal(false);
   readonly tiempoActual = signal(Date.now());
@@ -65,6 +65,12 @@ export class ViajesPage {
   ) {
     setInterval(() => this.tiempoActual.set(Date.now()), 1000);
     void this.cargarUbicacionInicial();
+  }
+
+  ionViewWillEnter(): void {
+    if (this.segmento() === 'gps' && !this.viajesService.viajeActivo()) {
+      void this.cargarUbicacionInicial();
+    }
   }
 
   cambiarSegmento(valor: 'gps' | 'manual'): void {
