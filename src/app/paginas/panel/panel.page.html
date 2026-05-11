@@ -1,0 +1,100 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>MiRuta</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fondo-app">
+  <div class="pantalla">
+    <section class="hero">
+      <p class="etiqueta">Panel inteligente</p>
+      <h1>Controla kilómetros, combustible e ingresos desde una sola vista.</h1>
+      <p class="descripcion">
+        Diseñado para motorizados que necesitan decisiones rápidas durante la jornada.
+      </p>
+    </section>
+
+    <section class="filtros">
+      <div class="campo">
+        <label>Desde</label>
+        <input type="date" [value]="fechaInicio()" (input)="actualizarFechaInicio($event)" />
+      </div>
+      <div class="campo">
+        <label>Hasta</label>
+        <input type="date" [value]="fechaFin()" (input)="actualizarFechaFin($event)" />
+      </div>
+      <ion-button fill="outline" size="small" (click)="limpiarFiltros()">Limpiar</ion-button>
+    </section>
+
+    <section class="rejilla-kpis">
+      <article class="tarjeta-kpi">
+        <span>Kilómetros</span>
+        <strong>{{ indicadores().kilometros }} {{ unidadDistancia() }}</strong>
+      </article>
+      <article class="tarjeta-kpi destacado">
+        <span>Ingresos</span>
+        <strong>{{ formatearMoneda(indicadores().ingresos) }}</strong>
+      </article>
+      <article class="tarjeta-kpi">
+        <span>Combustible</span>
+        <strong>{{ formatearMoneda(indicadores().combustible) }}</strong>
+      </article>
+      <article class="tarjeta-kpi">
+        <span>Ganancia neta</span>
+        <strong>{{ formatearMoneda(indicadores().ganancia) }}</strong>
+      </article>
+    </section>
+
+    <section class="tarjeta-doble">
+      <article class="tarjeta-panel">
+        <div class="encabezado-tarjeta">
+          <h2>Ingreso por km</h2>
+          <span>{{ formatearMoneda(indicadores().ingresoPorKm) }}</span>
+        </div>
+        <p>Qué tan rentable está siendo tu ruta en el periodo filtrado.</p>
+      </article>
+
+      <article class="tarjeta-panel">
+        <div class="encabezado-tarjeta">
+          <h2>Viajes guardados</h2>
+          <span>{{ viajesService.totalViajes() }}</span>
+        </div>
+        <p>Incluye viajes GPS y registros manuales almacenados localmente.</p>
+      </article>
+    </section>
+
+    <section class="grafico">
+      <div class="encabezado-tarjeta">
+        <h2>Ingresos últimos 7 días</h2>
+        <span>{{ configuracionService.configuracion().moneda }}</span>
+      </div>
+
+      @for (item of serieIngresos(); track item.etiqueta) {
+        <div class="fila-grafico">
+          <label>{{ item.etiqueta }}</label>
+          <div class="barra">
+            <span [style.width.%]="porcentajeBarra(item.valor, valorMaximoIngresos())"></span>
+          </div>
+          <strong>{{ formatearMoneda(item.valor) }}</strong>
+        </div>
+      }
+    </section>
+
+    <section class="grafico">
+      <div class="encabezado-tarjeta">
+        <h2>Kilómetros últimos 7 días</h2>
+        <span>{{ unidadDistancia() }}</span>
+      </div>
+
+      @for (item of serieKm(); track item.etiqueta) {
+        <div class="fila-grafico">
+          <label>{{ item.etiqueta }}</label>
+          <div class="barra barra-secundaria">
+            <span [style.width.%]="porcentajeBarra(item.valor, valorMaximoKm())"></span>
+          </div>
+          <strong>{{ item.valor }}</strong>
+        </div>
+      }
+    </section>
+  </div>
+</ion-content>

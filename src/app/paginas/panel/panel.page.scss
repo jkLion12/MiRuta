@@ -1,0 +1,156 @@
+.pantalla {
+  padding: calc(72px + env(safe-area-inset-top)) 1rem 7.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.hero,
+.filtros,
+.tarjeta-panel,
+.grafico,
+.tarjeta-kpi {
+  border-radius: 26px;
+  border: 1px solid rgba(247, 239, 237, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(127, 167, 184, 0.18), transparent 32%),
+    linear-gradient(180deg, rgba(14, 30, 46, 0.96), rgba(7, 18, 28, 0.96));
+  box-shadow: 0 22px 40px rgba(3, 10, 19, 0.28);
+}
+
+.hero {
+  padding: 1.35rem;
+}
+
+.hero h1 {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 1.8rem;
+  line-height: 1.15;
+}
+
+.etiqueta {
+  color: #7fa7b8;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin: 0;
+}
+
+.descripcion {
+  margin: 0;
+  color: rgba(247, 239, 237, 0.74);
+}
+
+.filtros {
+  padding: 1rem;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.campo {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.campo label {
+  color: rgba(247, 239, 237, 0.72);
+  font-size: 0.85rem;
+}
+
+.campo input {
+  border: 1px solid rgba(127, 167, 184, 0.18);
+  background: rgba(247, 239, 237, 0.06);
+  color: #f7efed;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+}
+
+.rejilla-kpis,
+.tarjeta-doble {
+  display: grid;
+  gap: 1rem;
+}
+
+.rejilla-kpis {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tarjeta-kpi {
+  padding: 1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.tarjeta-kpi span,
+.tarjeta-panel p,
+.encabezado-tarjeta span {
+  color: rgba(247, 239, 237, 0.68);
+}
+
+.tarjeta-kpi strong {
+  font-size: 1.3rem;
+}
+
+.destacado {
+  background:
+    radial-gradient(circle at top, rgba(241, 72, 91, 0.3), transparent 40%),
+    linear-gradient(180deg, rgba(49, 80, 104, 0.98), rgba(16, 25, 39, 0.98));
+}
+
+.tarjeta-panel,
+.grafico {
+  padding: 1.1rem;
+}
+
+.encabezado-tarjeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.encabezado-tarjeta h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.grafico {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.fila-grafico {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fila-grafico label {
+  color: rgba(247, 239, 237, 0.68);
+  font-size: 0.8rem;
+}
+
+.barra {
+  height: 11px;
+  border-radius: 999px;
+  background: rgba(247, 239, 237, 0.08);
+  overflow: hidden;
+}
+
+.barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f1485b, #7fa7b8);
+}
+
+.barra-secundaria span {
+  background: linear-gradient(90deg, #7fa7b8, #33546d);
+}
+
+@media (min-width: 768px) {
+  .rejilla-kpis,
+  .tarjeta-doble {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

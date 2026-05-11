@@ -1,0 +1,181 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>Viajes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fondo-app">
+  <div class="pantalla">
+    <ion-segment [value]="segmento()" (ionChange)="manejarCambioSegmento($event.detail.value)">
+      <ion-segment-button value="gps">
+        <ion-label>En vivo</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="manual">
+        <ion-label>Manual</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    @if (segmento() === 'gps') {
+      <section class="panel-accion">
+        <div>
+          <p class="etiqueta">Registro en tiempo real</p>
+          <h1>{{ viajesService.viajeActivo() ? 'Ruta activa' : 'Listo para salir' }}</h1>
+        </div>
+
+        @if (!viajesService.viajeActivo()) {
+          <ion-button expand="block" size="large" class="boton-principal" (click)="iniciarViaje()">
+            Iniciar Viaje
+          </ion-button>
+        } @else {
+          <ion-button
+            expand="block"
+            size="large"
+            color="danger"
+            class="boton-principal"
+            (click)="finalizarViaje()"
+          >
+            {{ mostrarFormularioCierre() ? 'Guardar y cerrar viaje' : 'Finalizar Viaje' }}
+          </ion-button>
+        }
+      </section>
+
+      <app-mapa-ruta [puntosRuta]="viajesService.viajeActivo()?.puntosRuta ?? []"></app-mapa-ruta>
+
+      @if (ubicacionService.error()) {
+        <ion-note color="danger">{{ ubicacionService.error() }}</ion-note>
+      }
+
+      <section class="rejilla-metricas">
+        <article class="tarjeta-metrica">
+          <span>Distancia</span>
+          <strong>{{ viajesService.viajeActivo()?.distanciaKm ?? 0 }} {{ unidadDistancia() }}</strong>
+        </article>
+        <article class="tarjeta-metrica">
+          <span>Duración</span>
+          <strong>{{ duracionActual() }}</strong>
+        </article>
+        <article class="tarjeta-metrica">
+          <span>Combustible estimado</span>
+          <strong>{{ viajesService.viajeActivo()?.combustibleEstimadoLitros ?? 0 }} L</strong>
+        </article>
+        <article class="tarjeta-metrica destacado">
+          <span>Ingreso acumulado</span>
+          <strong>{{ formatearMoneda(viajesService.viajeActivo()?.ingresoAcumulado ?? 0) }}</strong>
+        </article>
+      </section>
+
+      @if (viajesService.viajeActivo()) {
+        <section class="tarjeta-formulario">
+          <div class="encabezado-tarjeta">
+            <h2>Agregar pago parcial</h2>
+            <span>{{ viajesService.viajeActivo()?.ingresosParciales?.length ?? 0 }} registros</span>
+          </div>
+
+          <form [formGroup]="formularioIngresoParcial" class="formulario-simple">
+            <ion-input
+              fill="outline"
+              type="number"
+              label="Monto"
+              labelPlacement="stacked"
+              formControlName="monto"
+            ></ion-input>
+            <ion-button expand="block" fill="outline" (click)="agregarIngresoParcial()">
+              Agregar ingreso
+            </ion-button>
+          </form>
+        </section>
+      }
+
+      @if (mostrarFormularioCierre() && viajesService.viajeActivo()) {
+        <section class="tarjeta-formulario">
+          <div class="encabezado-tarjeta">
+            <h2>Cierre rápido</h2>
+            <span>Completa el ingreso final y el combustible real si aplica</span>
+          </div>
+
+          <form [formGroup]="formularioCierre" class="formulario">
+            <ion-input
+              fill="outline"
+              type="number"
+              label="Ingreso final"
+              labelPlacement="stacked"
+              formControlName="ingresoFinal"
+            ></ion-input>
+            <ion-input
+              fill="outline"
+              type="number"
+              label="Litros cargados"
+              labelPlacement="stacked"
+              formControlName="combustibleRealLitros"
+            ></ion-input>
+            <ion-input
+              fill="outline"
+              type="number"
+              label="Costo real combustible"
+              labelPlacement="stacked"
+              formControlName="costoCombustible"
+            ></ion-input>
+            <ion-textarea
+              fill="outline"
+              label="Notas"
+              labelPlacement="stacked"
+              formControlName="notas"
+            ></ion-textarea>
+          </form>
+        </section>
+      }
+    } @else {
+      <section class="tarjeta-formulario">
+        <div class="encabezado-tarjeta">
+          <h2>Nuevo viaje manual</h2>
+          <span>Ideal si olvidaste activar el GPS</span>
+        </div>
+
+        <form [formGroup]="formularioManual" class="formulario">
+          <ion-input fill="outline" label="Origen" labelPlacement="stacked" formControlName="origen"></ion-input>
+          <ion-input fill="outline" label="Destino" labelPlacement="stacked" formControlName="destino"></ion-input>
+          <ion-input
+            fill="outline"
+            type="number"
+            label="Kilómetros"
+            labelPlacement="stacked"
+            formControlName="distanciaKm"
+          ></ion-input>
+          <ion-input
+            fill="outline"
+            type="number"
+            label="Duración (min)"
+            labelPlacement="stacked"
+            formControlName="duracionMinutos"
+          ></ion-input>
+          <ion-input
+            fill="outline"
+            type="number"
+            label="Ingreso"
+            labelPlacement="stacked"
+            formControlName="ingreso"
+          ></ion-input>
+          <ion-input
+            fill="outline"
+            type="number"
+            label="Litros consumidos"
+            labelPlacement="stacked"
+            formControlName="combustibleRealLitros"
+          ></ion-input>
+          <ion-input
+            fill="outline"
+            type="number"
+            label="Costo combustible"
+            labelPlacement="stacked"
+            formControlName="costoCombustible"
+          ></ion-input>
+          <ion-textarea fill="outline" label="Notas" labelPlacement="stacked" formControlName="notas"></ion-textarea>
+        </form>
+
+        <ion-button expand="block" size="large" class="boton-principal" (click)="registrarViajeManual()">
+          Guardar viaje manual
+        </ion-button>
+      </section>
+    }
+  </div>
+</ion-content>

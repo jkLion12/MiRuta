@@ -24,6 +24,7 @@
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
+@import "leaflet/dist/leaflet.css";
 
 /**
  * Ionic Dark Mode
@@ -35,3 +36,60 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+:root {
+  --ion-font-family: "Segoe UI", "SF Pro Display", sans-serif;
+}
+
+html,
+body,
+ion-app,
+ion-content {
+  background:
+    radial-gradient(circle at top, rgba(127, 167, 184, 0.16), transparent 24%),
+    linear-gradient(180deg, #10202f 0%, #09131d 100%);
+  color: #f7efed;
+}
+
+body.tema-claro {
+  background: linear-gradient(180deg, #f7efed 0%, #ebe5e3 100%);
+  color: #233749;
+}
+
+.fondo-app {
+  --background: transparent;
+}
+
+ion-toolbar {
+  --background: rgba(9, 19, 29, 0.66);
+  --border-color: transparent;
+  backdrop-filter: blur(14px);
+}
+
+body.tema-claro ion-toolbar {
+  --background: rgba(247, 239, 237, 0.82);
+}
+
+ion-title,
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+}
+
+ion-button {
+  --background: #f1485b;
+  --background-hover: #ff5e70;
+  --box-shadow: 0 16px 30px rgba(241, 72, 91, 0.28);
+}
+
+ion-button[fill='outline'] {
+  --background: transparent;
+  --color: #f7efed;
+  --border-color: rgba(127, 167, 184, 0.3);
+  --box-shadow: none;
+}
+
+body.tema-claro ion-button[fill='outline'] {
+  --color: #33546d;
+}

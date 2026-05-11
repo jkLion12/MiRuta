@@ -1,0 +1,41 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>Historial</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fondo-app">
+  <div class="pantalla">
+    @for (viaje of viajesService.viajes(); track viaje.id) {
+      <article class="tarjeta-viaje">
+        <a class="contenido" [routerLink]="['/historial', viaje.id]">
+          <div class="cabecera">
+            <div>
+              <p>{{ formatearFecha(viaje.fechaInicio) }}</p>
+              <h2>{{ viaje.origen }} → {{ viaje.destino }}</h2>
+            </div>
+            <ion-chip [color]="viaje.tipo === 'gps' ? 'primary' : 'medium'">
+              {{ viaje.tipo === 'gps' ? 'GPS' : 'Manual' }}
+            </ion-chip>
+          </div>
+
+          <div class="metricas">
+            <span>{{ viaje.distanciaKm }} km</span>
+            <span>{{ formatearMoneda(viaje.ingreso) }}</span>
+            <span>{{ formatearMoneda(viaje.costoCombustible) }}</span>
+            <strong>{{ formatearMoneda(viaje.gananciaNeta) }}</strong>
+          </div>
+        </a>
+
+        <ion-button fill="clear" color="danger" size="small" (click)="confirmarEliminacion(viaje.id)">
+          Eliminar
+        </ion-button>
+      </article>
+    } @empty {
+      <section class="vacio">
+        <h2>Aún no hay viajes</h2>
+        <p>Comienza un trayecto desde la pestaña Viajes o registra uno manualmente.</p>
+      </section>
+    }
+  </div>
+</ion-content>

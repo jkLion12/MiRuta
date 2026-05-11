@@ -1,0 +1,18 @@
+.barra-tabs {
+  --background: rgba(12, 25, 38, 0.96);
+  --border: 1px solid rgba(247, 239, 237, 0.08);
+  border-top: 1px solid rgba(247, 239, 237, 0.08);
+  padding: 0.35rem 0.4rem calc(0.4rem + env(safe-area-inset-bottom));
+  backdrop-filter: blur(16px);
+}
+
+ion-tab-button {
+  --color: rgba(247, 239, 237, 0.62);
+  --color-selected: #f7efed;
+  min-height: 56px;
+  border-radius: 18px;
+}
+
+ion-tab-button.tab-activo {
+  background: linear-gradient(135deg, rgba(127, 167, 184, 0.22), rgba(241, 72, 91, 0.2));
+}

@@ -1,0 +1,47 @@
+.pantalla {
+  padding: calc(72px + env(safe-area-inset-top)) 1rem 2rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.resumen,
+.tarjeta-formulario {
+  border-radius: 24px;
+  border: 1px solid rgba(247, 239, 237, 0.08);
+  background:
+    radial-gradient(circle at top right, rgba(127, 167, 184, 0.16), transparent 30%),
+    linear-gradient(180deg, rgba(14, 29, 43, 0.96), rgba(7, 17, 27, 0.96));
+  padding: 1.1rem;
+}
+
+.resumen p {
+  margin: 0;
+  color: rgba(247, 239, 237, 0.68);
+}
+
+.resumen h1 {
+  margin: 0.4rem 0 0.8rem;
+  font-size: 1.4rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.formulario {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.boton-principal {
+  margin-top: 1rem;
+  --border-radius: 20px;
+}
+
+@media (min-width: 768px) {
+  .formulario {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

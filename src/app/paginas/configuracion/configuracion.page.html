@@ -1,0 +1,61 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title>Ajustes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="fondo-app">
+  <div class="pantalla">
+    <section class="tarjeta-formulario">
+      <h1>Configuración del vehículo</h1>
+      <form [formGroup]="formulario" class="formulario">
+        <ion-select
+          fill="outline"
+          label="Modo de rendimiento"
+          labelPlacement="stacked"
+          formControlName="rendimientoModo"
+        >
+          <ion-select-option value="km_l">km/l</ion-select-option>
+          <ion-select-option value="l_100km">l/100km</ion-select-option>
+        </ion-select>
+
+        <ion-input
+          fill="outline"
+          type="number"
+          label="Rendimiento"
+          labelPlacement="stacked"
+          formControlName="rendimientoValor"
+        ></ion-input>
+
+        <ion-input
+          fill="outline"
+          type="number"
+          label="Precio por litro"
+          labelPlacement="stacked"
+          formControlName="precioCombustible"
+        ></ion-input>
+
+        <ion-input fill="outline" label="Moneda" labelPlacement="stacked" formControlName="moneda"></ion-input>
+
+        <ion-select
+          fill="outline"
+          label="Unidad de distancia"
+          labelPlacement="stacked"
+          formControlName="unidadDistancia"
+        >
+          <ion-select-option value="km">Kilómetros</ion-select-option>
+          <ion-select-option value="mi">Millas</ion-select-option>
+        </ion-select>
+
+        <ion-select fill="outline" label="Tema" labelPlacement="stacked" formControlName="tema">
+          <ion-select-option value="oscuro">Oscuro</ion-select-option>
+          <ion-select-option value="claro">Claro</ion-select-option>
+          <ion-select-option value="sistema">Sistema</ion-select-option>
+        </ion-select>
+      </form>
+
+      <ion-button expand="block" class="boton-principal" (click)="guardar()">Guardar ajustes</ion-button>
+      <ion-button expand="block" fill="outline" (click)="exportarCsv()">Exportar datos a CSV</ion-button>
+    </section>
+  </div>
+</ion-content>
