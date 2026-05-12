@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AlertController, IonicModule, ToastController } from '@ionic/angular';
 
@@ -8,7 +8,11 @@ import { PuntoRuta } from '../../modelos/viaje.model';
 import { ConfiguracionService } from '../../servicios/configuracion.service';
 import { UbicacionService } from '../../servicios/ubicacion.service';
 import { ViajesService } from '../../servicios/viajes.service';
-import { distanciaRutaKm, estimarCombustible } from '../../utilidades/calculos-viaje';
+import {
+  distanciaEntrePuntosKm,
+  distanciaRutaKm,
+  estimarCombustible,
+} from '../../utilidades/calculos-viaje';
 import { dinero, duracion, kilometros } from '../../utilidades/formato';
 
 @Component({
@@ -19,6 +23,8 @@ import { dinero, duracion, kilometros } from '../../utilidades/formato';
   styleUrl: './viajes.page.scss',
 })
 export class ViajesPage implements OnInit, OnDestroy {
+  @ViewChild(MapaRutaComponent) private readonly mapa?: MapaRutaComponent;
+
   modo: 'vivo' | 'manual' = 'vivo';
   capa: CapaMapa = 'calles';
   activo = false;
@@ -60,6 +66,10 @@ export class ViajesPage implements OnInit, OnDestroy {
     await this.centrarEnMiUbicacion();
   }
 
+  ionViewDidEnter(): void {
+    this.mapa?.invalidarTamano();
+  }
+
   async ngOnDestroy(): Promise<void> {
     await this.ubicacion.detenerSeguimiento();
     this.detenerCronometro();
@@ -84,7 +94,8 @@ export class ViajesPage implements OnInit, OnDestroy {
       }
       this.mensaje = `Ubicacion detectada. Precision aprox: ${Math.round(punto.precision ?? 0)} m`;
     } catch (error) {
-      this.mensaje = error instanceof Error ? error.message : 'No fue posible obtener tu ubicacion actual.';
+      const mensaje = error instanceof Error ? error.message : String(error);
+      this.mensaje = this.ubicacion.mensajeError(mensaje);
     }
   }
 
@@ -109,10 +120,11 @@ export class ViajesPage implements OnInit, OnDestroy {
         },
       );
 
-      this.mensaje = 'GPS activo. Mantén la app abierta durante el viaje.';
+      this.mensaje = 'GPS activo. Manten la app abierta durante el viaje.';
     } catch (error) {
       this.activo = false;
-      this.mensaje = error instanceof Error ? error.message : 'No fue posible iniciar el GPS.';
+      const mensaje = error instanceof Error ? error.message : String(error);
+      this.mensaje = this.ubicacion.mensajeError(mensaje);
     }
   }
 
@@ -229,15 +241,23 @@ export class ViajesPage implements OnInit, OnDestroy {
   }
 
   private recibirPunto(punto: PuntoRuta): void {
-    if ((punto.precision ?? 0) > 100 && this.puntos.length > 0) {
-      this.mensaje = `Esperando mejor precision GPS (${Math.round(punto.precision ?? 0)} m).`;
+    const ultimo = this.puntos[this.puntos.length - 1];
+    const distanciaDesdeUltimo = ultimo ? distanciaEntrePuntosKm(ultimo, punto) : 0;
+    const segundosDesdeUltimo = ultimo ? Math.abs(punto.timestamp - ultimo.timestamp) / 1000 : 999;
+
+    if (ultimo && distanciaDesdeUltimo < 0.004 && segundosDesdeUltimo < 4) {
+      return;
+    }
+
+    if (ultimo && (punto.precision ?? 0) > 250 && distanciaDesdeUltimo < 0.05) {
+      this.mensaje = `GPS con baja precision (${Math.round(punto.precision ?? 0)} m). Sigo buscando mejor senal.`;
       return;
     }
 
     this.puntos = [...this.puntos, punto];
     this.centroActual = punto;
     this.distanciaKm = distanciaRutaKm(this.puntos);
-    this.mensaje = `GPS activo. Precision aprox: ${Math.round(punto.precision ?? 0)} m`;
+    this.mensaje = `GPS activo. Precision aprox: ${Math.round(punto.precision ?? 0)} m. Puntos: ${this.puntos.length}`;
   }
 
   private iniciarCronometro(): void {

@@ -7,6 +7,7 @@ import { PuntoRuta } from '../modelos/viaje.model';
 @Injectable({ providedIn: 'root' })
 export class UbicacionService {
   private watchId?: string;
+  private intervaloRespaldo?: ReturnType<typeof setInterval>;
 
   async obtenerActual(): Promise<PuntoRuta> {
     if (Capacitor.isNativePlatform()) {
@@ -33,12 +34,12 @@ export class UbicacionService {
       this.watchId = await Geolocation.watchPosition(
         {
           enableHighAccuracy: true,
-          timeout: 20000,
+          timeout: 30000,
           maximumAge: 0,
         },
         (posicion, error) => {
           if (error) {
-            onError(error.message);
+            onError(this.mensajeError(error.message));
             return;
           }
 
@@ -47,6 +48,7 @@ export class UbicacionService {
           }
         },
       );
+      this.iniciarRespaldo(onPunto, onError);
       return;
     }
 
@@ -57,13 +59,19 @@ export class UbicacionService {
 
     const id = navigator.geolocation.watchPosition(
       (posicion) => onPunto(this.desdeWeb(posicion)),
-      (error) => onError(error.message),
-      { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 },
+      (error) => onError(this.mensajeError(error.message)),
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 },
     );
     this.watchId = id.toString();
+    this.iniciarRespaldo(onPunto, onError);
   }
 
   async detenerSeguimiento(): Promise<void> {
+    if (this.intervaloRespaldo) {
+      clearInterval(this.intervaloRespaldo);
+      this.intervaloRespaldo = undefined;
+    }
+
     if (!this.watchId) {
       return;
     }
@@ -120,5 +128,36 @@ export class UbicacionService {
       precision: posicion.coords.accuracy,
       timestamp: posicion.timestamp,
     };
+  }
+
+  private iniciarRespaldo(
+    onPunto: (punto: PuntoRuta) => void,
+    onError: (mensaje: string) => void,
+  ): void {
+    this.intervaloRespaldo = setInterval(() => {
+      void this.obtenerActual()
+        .then((punto) => onPunto(punto))
+        .catch((error: unknown) => {
+          const mensaje = error instanceof Error ? error.message : String(error);
+          onError(this.mensajeError(mensaje));
+        });
+    }, 5000);
+  }
+
+  mensajeError(mensaje: string): string {
+    const texto = mensaje.toLowerCase();
+    if (texto.includes('timeout') || texto.includes('expired')) {
+      return 'El GPS tardo demasiado en responder. Sigo intentando actualizar tu ubicacion.';
+    }
+
+    if (texto.includes('denied') || texto.includes('permission')) {
+      return 'Permiso de ubicacion denegado. Activalo en los ajustes del celular.';
+    }
+
+    if (texto.includes('unavailable') || texto.includes('provider')) {
+      return 'La ubicacion no esta disponible por ahora. Activa GPS y datos moviles.';
+    }
+
+    return 'No pude actualizar tu ubicacion. Sigo intentando con el GPS.';
   }
 }

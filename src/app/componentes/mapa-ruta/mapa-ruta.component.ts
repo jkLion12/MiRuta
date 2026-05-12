@@ -14,6 +14,21 @@ import { PuntoRuta } from '../../modelos/viaje.model';
 
 export type CapaMapa = 'calles' | 'satelite';
 
+const PROVEEDORES_MAPA: Record<CapaMapa, string[]> = {
+  calles: [
+    'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    'http://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+  ],
+  satelite: [
+    'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    'http://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+  ],
+};
+
 @Component({
   selector: 'app-mapa-ruta',
   standalone: true,
@@ -33,10 +48,18 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
   private ruta?: L.Polyline;
   private marcadorActual?: L.CircleMarker;
   private circuloPrecision?: L.Circle;
+  private observadorTamano?: ResizeObserver;
+  private erroresCapa = 0;
+  private cambiandoProveedor = false;
+  private indiceProveedor: Record<CapaMapa, number> = {
+    calles: 0,
+    satelite: 0,
+  };
 
   ngAfterViewInit(): void {
     this.crearMapa();
     this.pintar();
+    this.observarTamano();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -45,6 +68,7 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     if (changes['capa']) {
+      this.indiceProveedor[this.capa] = 0;
       this.cambiarCapa();
     }
 
@@ -52,12 +76,15 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.observadorTamano?.disconnect();
     this.mapa?.remove();
     this.mapa = undefined;
   }
 
   invalidarTamano(): void {
-    window.setTimeout(() => this.mapa?.invalidateSize(true), 120);
+    [0, 180, 600, 1200].forEach((espera) => {
+      window.setTimeout(() => this.mapa?.invalidateSize(true), espera);
+    });
   }
 
   private crearMapa(): void {
@@ -76,6 +103,7 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
       zoom: 16,
       zoomControl: true,
       attributionControl: false,
+      preferCanvas: true,
     });
     this.cambiarCapa();
     this.invalidarTamano();
@@ -90,15 +118,18 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.capaActual.removeFrom(this.mapa);
     }
 
-    const url =
-      this.capa === 'satelite'
-        ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-        : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    this.erroresCapa = 0;
+    this.cambiandoProveedor = false;
+    const url = this.urlCapa();
 
     this.capaActual = L.tileLayer(url, {
       maxZoom: 19,
-      crossOrigin: true,
-    }).addTo(this.mapa);
+      minZoom: 3,
+      keepBuffer: 4,
+      updateWhenIdle: false,
+    })
+      .on('tileerror', () => this.manejarErrorCapa())
+      .addTo(this.mapa);
   }
 
   private pintar(): void {
@@ -146,5 +177,34 @@ export class MapaRutaComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
 
     this.invalidarTamano();
+  }
+
+  private observarTamano(): void {
+    if (!this.mapaRef) {
+      return;
+    }
+
+    this.observadorTamano = new ResizeObserver(() => this.invalidarTamano());
+    this.observadorTamano.observe(this.mapaRef.nativeElement);
+  }
+
+  private urlCapa(): string {
+    return PROVEEDORES_MAPA[this.capa][this.indiceProveedor[this.capa]];
+  }
+
+  private manejarErrorCapa(): void {
+    if (!this.mapa || this.cambiandoProveedor) {
+      return;
+    }
+
+    this.erroresCapa += 1;
+    const proveedores = PROVEEDORES_MAPA[this.capa];
+    const hayRespaldo = this.indiceProveedor[this.capa] < proveedores.length - 1;
+
+    if (this.erroresCapa >= 2 && hayRespaldo) {
+      this.cambiandoProveedor = true;
+      this.indiceProveedor[this.capa] += 1;
+      window.setTimeout(() => this.cambiarCapa(), 250);
+    }
   }
 }
