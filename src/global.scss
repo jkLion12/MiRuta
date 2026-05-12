@@ -75,6 +75,57 @@ ion-datetime-button {
   --border-color: var(--app-borde);
 }
 
+ion-alert,
+ion-popover,
+ion-modal,
+ion-action-sheet {
+  --background: var(--app-superficie);
+  --color: var(--app-texto);
+  color: var(--app-texto);
+}
+
+ion-alert .alert-wrapper,
+ion-alert .alert-radio-group,
+ion-alert .alert-checkbox-group,
+ion-alert .alert-input-group {
+  background: var(--app-superficie);
+  color: var(--app-texto);
+}
+
+ion-alert .alert-title,
+ion-alert .alert-sub-title,
+ion-alert .alert-message,
+ion-alert .alert-radio-label,
+ion-alert .alert-checkbox-label,
+ion-alert .alert-input,
+ion-alert button {
+  color: var(--app-texto) !important;
+}
+
+ion-popover ion-content,
+ion-popover ion-list,
+ion-popover ion-item,
+ion-modal ion-content,
+ion-action-sheet .action-sheet-group {
+  --background: var(--app-superficie);
+  --color: var(--app-texto);
+  background: var(--app-superficie);
+  color: var(--app-texto);
+}
+
+ion-select-popover ion-item,
+ion-select-popover ion-label,
+ion-select-popover ion-radio {
+  --background: var(--app-superficie);
+  --color: var(--app-texto);
+  color: var(--app-texto);
+}
+
+ion-toast {
+  --background: var(--app-azul);
+  --color: #ffffff;
+}
+
 .pantalla {
   display: block;
   padding: 16px;

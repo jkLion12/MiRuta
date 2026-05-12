@@ -8,8 +8,8 @@
   <main class="pantalla">
     <section class="bloque hero">
       <span>Panel inteligente</span>
-      <h1>Controla kilómetros, combustible e ingresos.</h1>
-      <p>Resumen rápido para tomar decisiones durante tu jornada.</p>
+      <h1>Controla kil&oacute;metros, combustible e ingresos.</h1>
+      <p>Resumen r&aacute;pido para tomar decisiones durante tu jornada.</p>
     </section>
 
     <section class="bloque">
@@ -24,7 +24,7 @@
 
     <section class="grid-dos">
       <article class="dato">
-        <span>Kilómetros</span>
+        <span>Kil&oacute;metros</span>
         <strong>{{ km(resumen.totalKm) }}</strong>
       </article>
       <article class="dato destacado">
@@ -46,7 +46,7 @@
         <h2 class="titulo-seccion">Ingreso por km</h2>
         <strong>{{ dinero(resumen.ingresoPorKm) }}</strong>
       </div>
-      <p class="subtexto">Mientras más alto sea este valor, más rentable está siendo tu ruta.</p>
+      <p class="subtexto">Mientras m&aacute;s alto sea este valor, m&aacute;s rentable est&aacute; siendo tu ruta.</p>
     </section>
 
     <section class="bloque">
@@ -63,7 +63,7 @@
             inputmode="decimal"
             [(ngModel)]="metaHoy"
           ></ion-input>
-          <ion-button expand="block" class="boton-secundario" (click)="guardarMeta()">Guardar meta</ion-button>
+          <ion-button expand="block" class="boton-secundario" (click)="guardarMeta()">Guardar meta de hoy</ion-button>
         </div>
         <div class="anillo" [style.background]="avanceMetaConico">
           <div>
@@ -74,9 +74,30 @@
       </div>
     </section>
 
+    <section class="bloque" *ngIf="historialMetas.length">
+      <div class="fila">
+        <h2 class="titulo-seccion">Registro de metas</h2>
+        <strong>{{ historialMetas.length }}</strong>
+      </div>
+      <div class="metas-lista">
+        <article class="meta-item" *ngFor="let meta of historialMetas">
+          <div>
+            <strong>{{ meta.etiqueta }}</strong>
+            <span>Meta {{ dinero(meta.meta) }} · Ganancia {{ dinero(meta.ganancia) }}</span>
+          </div>
+          <ion-badge [color]="meta.cumplida ? 'success' : 'warning'">
+            {{ meta.cumplida ? 'Cumplida' : 'Pendiente' }}
+          </ion-badge>
+          <div class="meta-progreso">
+            <i [style.width.%]="meta.progreso"></i>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <section class="bloque">
       <div class="fila">
-        <h2 class="titulo-seccion">Ingresos últimos 7 días</h2>
+        <h2 class="titulo-seccion">Ingresos &uacute;ltimos 7 d&iacute;as</h2>
         <strong>{{ dinero(ingresoHoy) }} hoy</strong>
       </div>
       <div class="grafico-columnas">
@@ -91,7 +112,7 @@
     </section>
 
     <section class="bloque">
-      <h2 class="titulo-seccion">Kilómetros últimos 7 días</h2>
+      <h2 class="titulo-seccion">Kil&oacute;metros &uacute;ltimos 7 d&iacute;as</h2>
       <div class="barras">
         <div class="barra" *ngFor="let dia of ultimosSieteDias">
           <span>{{ dia.etiqueta }}</span>

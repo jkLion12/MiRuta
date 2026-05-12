@@ -8,9 +8,8 @@ import { ViajesService } from '../../servicios/viajes.service';
 import { ResumenViajes, Viaje } from '../../modelos/viaje.model';
 import { dinero, kilometros } from '../../utilidades/formato';
 import { resumenDeViajes } from '../../utilidades/calculos-viaje';
-import { AlmacenamientoService } from '../../servicios/almacenamiento.service';
-
-const CLAVE_META_HOY = 'meta_ganancia_hoy';
+import { MetasDiariasService } from '../../servicios/metas-diarias.service';
+import { MetaDiaria } from '../../modelos/meta-diaria.model';
 
 interface DiaGrafico {
   clave: string;
@@ -23,6 +22,15 @@ interface DiaGrafico {
   porcentajeKm: number;
   porcentajeGanancia: number;
   porcentajeCombustible: number;
+}
+
+interface MetaVista {
+  fecha: string;
+  etiqueta: string;
+  meta: number;
+  ganancia: number;
+  progreso: number;
+  cumplida: boolean;
 }
 
 @Component({
@@ -43,23 +51,28 @@ export class PanelPage implements OnInit {
   mejorDia: DiaGrafico | null = null;
   resumen: ResumenViajes = resumenDeViajes([]);
   ultimosSieteDias: DiaGrafico[] = [];
+  historialMetas: MetaVista[] = [];
+  fechaHoy = this.claveFecha(new Date());
 
   constructor(
     private readonly viajes: ViajesService,
     private readonly configuracion: ConfiguracionService,
-    private readonly almacenamiento: AlmacenamientoService,
+    private readonly metasDiarias: MetasDiariasService,
     private readonly toast: ToastController,
   ) {}
 
   async ngOnInit(): Promise<void> {
     await this.configuracion.cargar();
-    this.metaHoy = await this.almacenamiento.obtener<number>(CLAVE_META_HOY, 100);
+    await this.metasDiarias.cargar();
+    this.metaHoy = this.metasDiarias.metaPorFecha(this.fechaHoy)?.meta ?? 100;
     await this.viajes.cargar();
     this.actualizar();
   }
 
   async ionViewWillEnter(): Promise<void> {
+    await this.metasDiarias.cargar();
     await this.viajes.cargar();
+    this.metaHoy = this.metasDiarias.metaPorFecha(this.fechaHoy)?.meta ?? this.metaHoy;
     this.actualizar();
   }
 
@@ -73,6 +86,10 @@ export class PanelPage implements OnInit {
     this.faltaMeta = Math.max(0, this.metaHoy - this.gananciaHoy);
     this.mejorDia =
       [...this.ultimosSieteDias].sort((a, b) => b.ganancia - a.ganancia)[0] ?? null;
+    this.historialMetas = this.crearHistorialMetas(
+      this.metasDiarias.actuales(),
+      this.viajes.actuales(),
+    );
   }
 
   limpiar(): void {
@@ -83,7 +100,8 @@ export class PanelPage implements OnInit {
 
   async guardarMeta(): Promise<void> {
     this.metaHoy = Number(this.metaHoy) || 0;
-    await this.almacenamiento.guardar(CLAVE_META_HOY, this.metaHoy);
+    await this.metasDiarias.guardarMeta(this.fechaHoy, this.metaHoy);
+    await this.metasDiarias.cargar();
     this.actualizar();
     const aviso = await this.toast.create({
       message: 'Meta de hoy guardada.',
@@ -159,6 +177,29 @@ export class PanelPage implements OnInit {
     }));
   }
 
+  private crearHistorialMetas(metas: MetaDiaria[], viajes: Viaje[]): MetaVista[] {
+    const gananciaPorDia = new Map<string, number>();
+    viajes.forEach((viaje) => {
+      const clave = this.claveFecha(new Date(viaje.fechaInicio));
+      gananciaPorDia.set(
+        clave,
+        (gananciaPorDia.get(clave) ?? 0) + viaje.ingreso - viaje.costoCombustible,
+      );
+    });
+
+    return metas.map((meta) => {
+      const ganancia = gananciaPorDia.get(meta.fecha) ?? 0;
+      return {
+        fecha: meta.fecha,
+        etiqueta: this.etiquetaFecha(meta.fecha),
+        meta: meta.meta,
+        ganancia,
+        progreso: meta.meta > 0 ? Math.min(100, Math.max(0, (ganancia / meta.meta) * 100)) : 0,
+        cumplida: meta.meta > 0 && ganancia >= meta.meta,
+      };
+    });
+  }
+
   private porcentaje(valor: number, maximo: number): number {
     if (maximo <= 0 || valor <= 0) {
       return 0;
@@ -171,5 +212,14 @@ export class PanelPage implements OnInit {
     const mes = `${fecha.getMonth() + 1}`.padStart(2, '0');
     const dia = `${fecha.getDate()}`.padStart(2, '0');
     return `${fecha.getFullYear()}-${mes}-${dia}`;
+  }
+
+  private etiquetaFecha(fecha: string): string {
+    const [anio, mes, dia] = fecha.split('-').map(Number);
+    return new Date(anio, mes - 1, dia).toLocaleDateString('es-PE', {
+      weekday: 'short',
+      day: '2-digit',
+      month: 'short',
+    });
   }
 }
